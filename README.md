@@ -8,6 +8,7 @@ This bot was created by me, /u/MatthewMob.
 * Will check and reply only to the last **five** posts made in the last **15 minutes** (can be altered).
 
 ## Dependancies
+* Python 3.4.x
 * PRAW
 * Beautiful Soup 4
 * Requests
