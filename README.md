@@ -1,9 +1,9 @@
 ## What is this?
-This is a bot that will automate the job of moderators on /r/needamod by automatically commenting to appropriate posts.  
-Created by me, /u/MatthewMob.
+This is a bot that will automate the job of moderators on /r/needamod by automatically commenting to posts with things that usually moderators would have to do manually.  
+This bot was created by me, /u/MatthewMob.
 
 ## Features
-* Automatically reply with subreddit information from a subreddit mentioned in a post.
+* Automatically reply with subreddit information of a subreddit mentioned in a post.
 * Automatically reply with suggestions to "Offer to Mod" posts.
 * Will check and reply only to the last **five** posts made in the last **15 minutes** (can be altered).
 
@@ -17,5 +17,5 @@ Created by me, /u/MatthewMob.
 * Datetime
 
 ##_WARNING_
-The code here was written in under three days and contains a **high amount of spaghetti**, right now there is next to no optimisation.  
-This also creates a text file (*checked.txt*) to store IDs of posts that have been scanned.
+The code here was written in under three days and contains a **high amount of spaghetti**, right now there is next to nothing in optimisation.  
+This also creates a text file (*checked.txt*) to store the IDs of posts that have been checked.
