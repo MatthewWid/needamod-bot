@@ -17,4 +17,5 @@ Created by me, /u/MatthewMob.
 * Datetime
 
 ##_WARNING_
-The code here was written in under three days and contains a **high amount of spaghetti**, right now there is next to no optimisation.
+The code here was written in under three days and contains a **high amount of spaghetti**, right now there is next to no optimisation.  
+This also creates a text file (*checked.txt*) to store IDs of posts that have been scanned.
