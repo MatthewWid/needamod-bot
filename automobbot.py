@@ -14,45 +14,51 @@ else:
     file.close()
 
 # Bot login details
-USERNAME = "<Bot Username>"
-PASSWORD = "<Bot Password>"
+USERNAME = "AutoMobBot"
+PASSWORD = "<Password>"
 
 # Subreddit to scan
-SUBREDDIT = "/r/needamod"
+SUBREDDIT = "needamod"
+
+# Credit left at the end of every bot message
+CREDIT = "\n\n---\n\n^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=%2Fr%2FAutoMobBot&subject=NeedAMod%20Bot&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot)"
 
 # Delay between checks (in seconds)
 LOOP_DELAY = 900
 
-UA = "/r/NeedAMod Subreddit Info + Offer To Mod Helper (Update 12) by /u/MatthewMob"
+# Amount of posts to get from /new
+GET_POSTS = 3
+
+UA = "/r/NeedAMod Automate Commenter (Update 14) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
 def commentSub(sub, post):
     m = r.get_subreddit(sub, fetch=True)
     d1 = datetime.datetime.utcfromtimestamp(m.created_utc)
-    com = "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str((datetime.datetime.now() - d1).days) + " days\n\n**Subscribers**: " + str(m.subscribers) + "\n\n**Current Mods**: " + str(len(m.get_moderators())) + "\n\n**Over 18**: " + str(m.over18) + "\n\n---\n\n^I ^am ^a ^bot, [^contact ^my ^owner ^here](https://www.reddit.com/message/compose?to=MatthewMob&subject=MobAutoBot&message=)^."
+    com = "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str((datetime.datetime.now() - d1).days) + " days\n\n**Subscribers**: " + str(m.subscribers) + "\n\n**Current Mods**: " + str(len(m.get_moderators())) + "\n\n**Over 18**: " + str(m.over18) + CREDIT
     
     print("\nCommenting Sub Info")
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    post.add_comment(com)
+    #post.add_comment(com)
 
 def commentOffer(post):
-    com = "Here are 3 questions to help people who want to recruit you know what your like.\n\n1.**How Active are you?** e.g. Hours per day\n\n2.**If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3.**In your opinion, what the most important quality a mod can have?**\n\n---\n\n^I ^am ^a ^bot, [^contact ^my ^owner ^here](https://www.reddit.com/message/compose?to=MatthewMob&subject=MobAutoBot&message=)^."
+    com = "Here are 3 questions to help people who want to recruit you know what your like.\n\n1.**How Active are you?** e.g. Hours per day\n\n2.**If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3.**In your opinion, what the most important quality a mod can have?**" + CREDIT
 
     print("\nCommenting Offer to Mod Help")
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    post.add_comment(com)
+    #post.add_comment(com)
 
 def findSub(string):
     return re.findall("\/r\/(.*?)\/", string, re.DOTALL)
 
 while True:
     print("Checks started\n");
-    submissions = r.get_subreddit(SUBREDDIT).get_new(limit=5)
+    submissions = r.get_subreddit(SUBREDDIT).get_new(limit=GET_POSTS)
     for submission in submissions:
         print("Checking " + submission.id + "\n")
         if submission.id not in checked:
