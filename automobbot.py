@@ -27,9 +27,9 @@ CREDIT = "\n\n---\n\n^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/
 LOOP_DELAY = 900
 
 # Amount of posts to get from /new
-GET_POSTS = 3
+GET_POSTS = 5
 
-UA = "/r/NeedAMod Automate Commenter (Update 14) by /u/MatthewMob"
+UA = "/r/NeedAMod Automate Commenter (Update 15) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -63,7 +63,7 @@ while True:
         print("Checking " + submission.id + "\n")
         if submission.id not in checked:
             if submission.link_flair_text != "offer to mod":
-                if submission.is_self == True:
+                if submission.is_self == True and submission.selftext:
                     soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
                     a = soup.find_all("a", href=True)
                     if a and len(a) > 0:
