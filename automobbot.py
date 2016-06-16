@@ -45,7 +45,7 @@ def commentSub(sub, post):
     post.add_comment(com)
 
 def commentOffer(post):
-    com = "Here are 3 questions to help people who want to recruit you know what your're like:\n\n1. **How Active are you (Eg, hours per day)?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what the most important quality a mod can have?**" + CREDIT
+    com = "Here are 3 questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
 
     print("\nCommenting Offer to Mod Help")
     print("Commenting on: " + post.id)
