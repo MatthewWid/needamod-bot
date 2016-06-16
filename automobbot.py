@@ -15,7 +15,7 @@ else:
 
 # Bot login details
 USERNAME = "AutoMobBot"
-PASSWORD = "115Mattey"
+PASSWORD = "<Password>"
 
 # Subreddit to scan
 SUBREDDIT = "needamod"
