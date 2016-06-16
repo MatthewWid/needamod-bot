@@ -15,7 +15,7 @@ else:
 
 # Bot login details
 USERNAME = "AutoMobBot"
-PASSWORD = "<Password>"
+PASSWORD = "115Mattey"
 
 # Subreddit to scan
 SUBREDDIT = "needamod"
@@ -29,7 +29,7 @@ LOOP_DELAY = 900
 # Amount of posts to get from /new
 GET_POSTS = 5
 
-UA = "/r/NeedAMod Automate Commenter (Update 15) by /u/MatthewMob"
+UA = "/r/NeedAMod Automate Commenter (Update 16) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -42,16 +42,16 @@ def commentSub(sub, post):
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    #post.add_comment(com)
+    post.add_comment(com)
 
 def commentOffer(post):
-    com = "Here are 3 questions to help people who want to recruit you know what your like.\n\n1.**How Active are you?** e.g. Hours per day\n\n2.**If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3.**In your opinion, what the most important quality a mod can have?**" + CREDIT
+    com = "Here are 3 questions to help people who want to recruit you know what your're like:\n\n1. **How Active are you (Eg, hours per day)?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what the most important quality a mod can have?**" + CREDIT
 
     print("\nCommenting Offer to Mod Help")
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    #post.add_comment(com)
+    post.add_comment(com)
 
 def findSub(string):
     return re.findall("\/r\/(.*?)\/", string, re.DOTALL)
