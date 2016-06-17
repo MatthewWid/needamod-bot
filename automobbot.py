@@ -42,7 +42,7 @@ def commentSub(sub, post):
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    post.add_comment(com)
+    #post.add_comment(com)
 
 def commentOffer(post):
     com = "Here are 3 questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
@@ -51,7 +51,7 @@ def commentOffer(post):
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    post.add_comment(com)
+    #post.add_comment(com)
 
 def findSub(string):
     return re.findall("\/r\/(.*?)\/", string, re.DOTALL)
@@ -66,21 +66,24 @@ while True:
                 if submission.is_self == True and submission.selftext:
                     soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
                     a = soup.find_all("a", href=True)
+                    print(a)
                     if a and len(a) > 0:
                         href = a[0]["href"] + "/"
+                        print(href)
                         getsub = findSub(href)
-                        if getsub != None:
+                        print(getsub)
+                        if getsub != None and len(getsub) > 0:
                             commentSub(getsub[0], submission)
                     else:
                         getsub = re.findall("\/r\/[a-zA-Z]+", submission.title, re.DOTALL)
-                        if getsub != None:
+                        if getsub != None and len(getsub) > 0:
                             href = getsub[0] + "/";
                             getsub = findSub(href)
                             commentSub(getsub[0], submission)
                 else:
                     href = submission.url + "/"
                     getsub = re.findall("\/r\/(.*?)\/", href, re.DOTALL)
-                    if getsub != None:
+                    if getsub != None and len(getsub) > 0:
                         commentSub(getsub[0], submission)
             elif submission.link_flair_text == "offer to mod":
                 commentOffer(submission)
