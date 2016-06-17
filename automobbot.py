@@ -29,7 +29,7 @@ LOOP_DELAY = 900
 # Amount of posts to get from /new
 GET_POSTS = 5
 
-UA = "/r/NeedAMod Automate Commenter (Update 16) by /u/MatthewMob"
+UA = "/r/NeedAMod Automate Commenter (Update 18) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -42,7 +42,7 @@ def commentSub(sub, post):
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    #post.add_comment(com)
+    post.add_comment(com)
 
 def commentOffer(post):
     com = "Here are 3 questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
@@ -51,7 +51,7 @@ def commentOffer(post):
     print("Commenting on: " + post.id)
     print("Comment: " + com + "\n")
 
-    #post.add_comment(com)
+    post.add_comment(com)
 
 def findSub(string):
     return re.findall("\/r\/(.*?)\/", string, re.DOTALL)
