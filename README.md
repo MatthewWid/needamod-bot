@@ -46,9 +46,6 @@ To send me feedback on the bot, send it through [modmail on /r/AutoMobBot](https
 * PRAW
 * Beautiful Soup 4
 * Requests
-* OS
-* Time
-* Math
 * Datetime
 
 ##_WARNING_
