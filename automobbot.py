@@ -2,7 +2,6 @@
 # Reply with subreddit info from subreddit in text body
 
 import praw, bs4, re, os, time, math, datetime
-from pprint import pprint
 
 if os.path.isfile("checked.txt") == False:
     checked = []
@@ -60,36 +59,58 @@ def commentOffer(post):
 def findSub(string):
     return re.findall("\/r\/(.*?)\/", string, re.DOTALL)
 
+def minDif(post):
+    d1 = time.mktime((datetime.datetime.utcfromtimestamp(post.created_utc)).timetuple())
+    d2 = time.mktime((datetime.datetime.utcnow()).timetuple())
+
+    dif = int(d2-d1)/60
+    
+    if dif > 5:
+        return True
+    else:
+        print("Submission too new\n")
+        return False
+
+def postTitle(post):
+    getsub = re.findall("\/r\/[a-zA-Z]+", post.title, re.DOTALL)
+    if getsub != None and len(getsub) > 0:
+        href = getsub[0] + "/"
+        getsub = findSub(href)
+        commentSub(getsub[0], post)
+        return True
+    else:
+        return False
+
 while True:
-    print("Checks started\n");
-    submissions = r.get_subreddit(SUBREDDIT).get_new(limit=GET_POSTS)
+    print("Checks started\n")
+    try:
+        submissions = r.get_subreddit(SUBREDDIT).get_new(limit=GET_POSTS)
+    except:
+        print("Subreddit no found: " + SUBREDDIT)
+        break
     for submission in submissions:
         print("Checking " + submission.id + "\n")
-        if submission.id not in checked:
+        if submission.id not in checked and minDif(submission):
             if submission.link_flair_text != "offer to mod":
-                if submission.is_self == True and submission.selftext:
-                    soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
-                    a = soup.find_all("a", href=True)
-                    if a and len(a) > 0:
-                        href = a[0]["href"] + "/"
-                        getsub = findSub(href)
-                        if getsub != None and len(getsub) > 0:
-                            commentSub(getsub[0], submission)
-                    else:
-                        getsub = re.findall("\/r\/[a-zA-Z]+", submission.title, re.DOTALL)
-                        if getsub != None and len(getsub) > 0:
-                            href = getsub[0] + "/";
+                if submission.is_self:
+                    if postTitle(submission) == False and submission.selftext:
+                        soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
+                        a = soup.find_all("a", href=True)
+                        if a and len(a) > 0:
+                            href = a[0]["href"] + "/"
                             getsub = findSub(href)
-                            commentSub(getsub[0], submission)
-                else:
+                            if getsub != None and len(getsub) > 0:
+                                commentSub(getsub[0], submission)
+                elif not submission.is_self:
                     href = submission.url + "/"
                     getsub = re.findall("\/r\/(.*?)\/", href, re.DOTALL)
                     if getsub != None and len(getsub) > 0:
                         commentSub(getsub[0], submission)
-            elif submission.link_flair_text == "offer to mod":
+                    else:
+                        postTitle(submission)
+            else:
                 commentOffer(submission)
 
-        if submission.id not in checked:
             checked.append(submission.id)
 
     file = open("checked.txt", "w")
