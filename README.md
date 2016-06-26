@@ -24,7 +24,7 @@ In "Offer to Mod" posts (based on the flair):
 
 > Here are 3 questions to help people who want to recruit you know what your like.
 >
-> 1.**How Active are you?** e.g. Hours per day
+> 1.**How Active are you (Eg, hours per day) and what timezone are you in?**
 > 
 > 2.**If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**
 > 
