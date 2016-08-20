@@ -1,5 +1,5 @@
 #! python3
-# Reply with subreddit info from subreddit in text body
+# Reply with subreddit info from subreddit in text body and give suggestions to people looking to mod
 
 import praw, bs4, re, os, time, math, datetime
 
@@ -13,14 +13,14 @@ else:
     file.close()
 
 # Bot login details
-USERNAME = "AutoMobBot"
+USERNAME = "<Username>"
 PASSWORD = "<Password>"
 
 # Subreddit to scan
-SUBREDDIT = "needamod"
+SUBREDDIT = "<Subreddit>"
 
 # Credit left at the end of every bot message
-CREDIT = "\n\n---\n\n^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=%2Fr%2FAutoMobBot&subject=NeedAMod%20Bot&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot)"
+CREDIT = "\n\n---\n\n^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot)"
 
 # Delay between checks (in seconds)
 LOOP_DELAY = 900
@@ -28,7 +28,10 @@ LOOP_DELAY = 900
 # Amount of posts to get from /new
 GET_POSTS = 5
 
-UA = "/r/NeedAMod Automate Commenter (Update 19) by /u/MatthewMob"
+# How old a post must be for it to be able to be checked (in minutes)
+WAIT_TIME = 5
+
+UA = "/r/NeedAMod Automate Commenter (Update 20) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -48,7 +51,7 @@ def commentSub(sub, post):
         print("Non-existent subreddit: " + sub)
 
 def commentOffer(post):
-    com = "Here are 3 questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
+    com = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
 
     print("\nCommenting Offer to Mod Help")
     print("Commenting on: " + post.id)
@@ -65,14 +68,14 @@ def minDif(post):
 
     dif = int(d2-d1)/60
     
-    if dif > 5:
+    if dif > WAIT_TIME:
         return True
     else:
         print("Submission too new\n")
         return False
 
 def postTitle(post):
-    getsub = re.findall("\/r\/[a-zA-Z]+", post.title, re.DOTALL)
+    getsub = re.findall("\/r\/[a-zA-Z?_\d]+", post.title, re.DOTALL)
     if getsub != None and len(getsub) > 0:
         href = getsub[0] + "/"
         getsub = findSub(href)
