@@ -18,11 +18,11 @@ For regular posts (where people are looking for mods):
 >
 > ---
 >
-> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=%2Fr%2FAutoMobBot&subject=NeedAMod%20Bot&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot)</sup>
+> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot)</sup>
 
 In "Offer to Mod" posts (based on the flair):
 
-> Here are 3 questions to help people who want to recruit you know what your like.
+> Here are three questions to help people who want to recruit you know what your like.
 >
 > 1.**How Active are you (Eg, hours per day) and what timezone are you in?**
 > 
@@ -31,23 +31,25 @@ In "Offer to Mod" posts (based on the flair):
 > 3.**In your opinion, what the most important quality a mod can have?**
 > 
 > ---
-> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=%2Fr%2FAutoMobBot&subject=NeedAMod%20Bot&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot)</sup>
+> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot)</sup>
 
 ## Features
 * Automatically reply with subreddit information of a subreddit mentioned in a post.
-* Automatically reply with suggestions to "Offer to Mod" posts.
-* Will check and reply only to the last **five** posts made in the last **15 minutes** (can be altered).
+* Automatically reply with suggested questions on "Offer to Mod" posts.
+* Will check and reply only to the last **five** posts made in the last **15 minutes** (by default, can be changed in the config vars)).
+
+You can find additional, and more detailed information about the bot [here](https://redd.it/4v4z1u).
+
+You can find planned features [here](https://redd.it/4v50l2).
 
 ## Feedback
-To send me feedback on the bot, send it through [modmail on /r/AutoMobBot](https://www.reddit.com/message/compose?to=%2Fr%2FAutoMobBot&subject=NeedAMod%20Bot&message=).
+To send me feedback on the bot, send me a [direct message on Reddit](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=).
 
-## Dependancies
+## Python Dependancies
 * Python 3.4.x
 * PRAW
 * Beautiful Soup 4
 * Requests
 * Datetime
 
-##_WARNING_
-The code here was written in under three days and contains a **high amount of spaghetti**, right now there is next to nothing in optimisation.  
-This also creates a text file (*checked.txt*) to store the IDs of posts that have been checked.
+**Note:** This will also create a new file called "checked.txt" which must be kept in order for posts to need be commented on multiple times.
