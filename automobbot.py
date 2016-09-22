@@ -1,7 +1,7 @@
 #! python3
 # Reply with subreddit info from subreddit in text body and give suggestions to people looking to mod
 
-import praw, bs4, re, os, time, math, datetime
+import praw, bs4, re, os, time, datetime
 
 if os.path.isfile("checked.txt") == False:
     checked = []
@@ -13,54 +13,49 @@ else:
     file.close()
 
 # Bot login details
-USERNAME = "AutoMobBot"
-PASSWORD = "Mattey115"
+USERNAME = "<Username>"
+PASSWORD = "<Password>"
 
 # Subreddit to scan
-SUBREDDIT = "matthewmob_csstesting"
+SUBREDDIT = "<Subreddit>"
 
 # Credit left at the end of every bot message
-CREDIT = "\n\n---\n\n^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot)"
+CREDIT = "^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot"
 
 # Delay between checks (in seconds)
 LOOP_DELAY = 900
 
-# Amount of posts to get from /new
-GET_POSTS = 5
+# Amount of posts to get from /new per loop
+GET_POSTS = 2
 
-# How old a post must be for it to be able to be checked (in minutes)
-WAIT_TIME = 1
+# How old a post must be for it to be checked (Allows time for flairing the post)
+WAIT_TIME = 0
 
-UA = "/r/NeedAMod Automate Commenter (Update 22) by /u/MatthewMob"
+UA = "/r/NeedAMod Automatic Commenter (Update 23) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
-def commentSub(sub, post):
-    try:
-        m = r.get_subreddit(sub, fetch=True)
+def commentSubs(subList, post):
+    msg = ""
+    for sub in subList:
+        try:
+            m = r.get_subreddit(sub, fetch=True)
 
-        d1 = datetime.datetime.utcfromtimestamp(m.created_utc)
-        com = "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str((datetime.datetime.now() - d1).days) + " days\n\n**Subscribers**: " + str(m.subscribers) + "\n\n**Current Mods**: " + str(len(m.get_moderators())) + "\n\n**Over 18**: " + str(m.over18) + CREDIT
-        
-        print("\nCommenting Sub Info")
-        print("Commenting on: " + post.id)
-        print("Comment: " + com + "\n")
-
-        post.add_comment(com)
-    except:
-        print("Non-existent subreddit: " + sub)
+            d1 = datetime.datetime.utcfromtimestamp(m.created_utc)
+            msg += "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str((datetime.datetime.now() - d1).days) + " days\n\n**Subscribers**: " + str(m.subscribers) + "\n\n**Current Mods**: " + str(len(m.get_moderators())) + "\n\n**Over 18**: " + str(m.over18) + "\n\n---\n\n"
+            
+            msg += CREDIT
+            post.add_comment(msg)
+        except:
+            None
 
 def commentOffer(post):
-    com = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
+    msg = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
 
-    print("\nCommenting Offer to Mod Help")
-    print("Commenting on: " + post.id)
-    print("Comment: " + com + "\n")
-
-    post.add_comment(com)
+    post.add_comment(msg)
 
 def findSub(string):
-    return re.findall("\/?r\/(.*?)\/", string, re.DOTALL)
+    return re.findall("\/?[rR]\/[a-zA-Z?_\d]+", string, re.DOTALL)
 
 def minDif(post):
     d1 = time.mktime((datetime.datetime.utcfromtimestamp(post.created_utc)).timetuple())
@@ -75,52 +70,55 @@ def minDif(post):
         return False
 
 def postTitle(post):
-    getsub = re.findall("\/?r\/[a-zA-Z?_\d]+", post.title, re.DOTALL)
-    if getsub != None and len(getsub) > 0:
-        href = getsub[0] + "/"
-        getsub = findSub(href)
-        commentSub(getsub[0], post)
+    getsub = re.findall("\/?[rR]\/[a-zA-Z?_\d]+", post.title, re.DOTALL)
+    if addSubFound(getsub) == True:
         return True
     else:
         return False
 
+def addSubFound(subList):
+    if subList != None and len(subList) > 0:
+        for i in subList:
+            i = re.sub("\/?[rR]\/", "", findSub(i + "/")[0])
+            if i not in subsFound:
+                subsFound.append(i)
+
+subsFound = []
+
 while True:
-    print("Checks started\n")
+    print("Checks started")
     try:
         submissions = r.get_subreddit(SUBREDDIT).get_new(limit=GET_POSTS)
     except:
         print("Subreddit not found: " + SUBREDDIT)
         break
     for submission in submissions:
-        print("Checking " + submission.id + "\n")
         if submission.id not in checked and minDif(submission):
+            print("\nChecking " + submission.id)
             if submission.link_flair_text != "offer to mod":
+                subsFound = []
                 if submission.is_self: # Self text
-                    if postTitle(submission) == False and submission.selftext: # If the subreddit is not mentioned in the post title and has content
+                    postTitle(submission)
+                    if submission.selftext: # If the submission has text content
                         soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
                         a = soup.find_all("a", href=True)
                         if a and len(a) > 0: # If the content has links
-                            href = a[0]["href"] + "/"
-                            getsub = findSub(href)
-                            if getsub != None and len(getsub) > 0: # Find the subreddit in the links
-                                commentSub(getsub[0], submission)
+                            for i in a:
+                                addSubFound(findSub(a[0]["href"] + "/"))
                 elif not submission.is_self: # Link post
-                    href = submission.url + "/"
-                    getsub = findSub(href)
-                    if getsub != None and len(getsub) > 0: # If a subreddit is found in the link post
-                        commentSub(getsub[0], submission)
-                    else: # Search the post title for a subreddit
-                        postTitle(submission)
+                    postTitle(submission)
+                    addSubFound(findSub(submission.url + "/"))
+                commentSubs(subsFound, submission)
+                print(subsFound)
             else: # If it's an "offer to mod" post
                 commentOffer(submission)
-
             checked.append(submission.id)
 
     file = open("checked.txt", "w")
     for post_id in checked:
         file.write(post_id + "\n")
     file.close()
-    print("Checks finished\n")
+    print("\nChecks finished\n")
 
     time.sleep(LOOP_DELAY)
 
