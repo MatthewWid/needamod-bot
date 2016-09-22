@@ -75,7 +75,7 @@ def minDif(post):
         return False
 
 def postTitle(post):
-    getsub = re.findall("\/r\/[a-zA-Z?_\d]+", post.title, re.DOTALL)
+    getsub = re.findall("\/?r\/[a-zA-Z?_\d]+", post.title, re.DOTALL)
     if getsub != None and len(getsub) > 0:
         href = getsub[0] + "/"
         getsub = findSub(href)
@@ -106,7 +106,7 @@ while True:
                                 commentSub(getsub[0], submission)
                 elif not submission.is_self:
                     href = submission.url + "/"
-                    getsub = re.findall("\/r\/(.*?)\/", href, re.DOTALL)
+                    getsub = findSub(href)
                     if getsub != None and len(getsub) > 0:
                         commentSub(getsub[0], submission)
                     else:
