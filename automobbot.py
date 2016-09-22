@@ -50,7 +50,7 @@ def commentSubs(subList, post):
             None
 
 def commentOffer(post):
-    msg = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**" + CREDIT
+    msg = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**\n\n---\n\n" + CREDIT
 
     post.add_comment(msg)
 
