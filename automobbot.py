@@ -13,11 +13,11 @@ else:
     file.close()
 
 # Bot login details
-USERNAME = "<Username>"
-PASSWORD = "<Password>"
+USERNAME = "AutoMobBot"
+PASSWORD = "Mattey115"
 
 # Subreddit to scan
-SUBREDDIT = "<Subreddit>"
+SUBREDDIT = "matthewmob_csstesting"
 
 # Credit left at the end of every bot message
 CREDIT = "\n\n---\n\n^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot)"
@@ -29,9 +29,9 @@ LOOP_DELAY = 900
 GET_POSTS = 5
 
 # How old a post must be for it to be able to be checked (in minutes)
-WAIT_TIME = 5
+WAIT_TIME = 1
 
-UA = "/r/NeedAMod Automate Commenter (Update 20) by /u/MatthewMob"
+UA = "/r/NeedAMod Automate Commenter (Update 22) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -60,7 +60,7 @@ def commentOffer(post):
     post.add_comment(com)
 
 def findSub(string):
-    return re.findall("\/r\/(.*?)\/", string, re.DOTALL)
+    return re.findall("\/?r\/(.*?)\/", string, re.DOTALL)
 
 def minDif(post):
     d1 = time.mktime((datetime.datetime.utcfromtimestamp(post.created_utc)).timetuple())
@@ -89,29 +89,29 @@ while True:
     try:
         submissions = r.get_subreddit(SUBREDDIT).get_new(limit=GET_POSTS)
     except:
-        print("Subreddit no found: " + SUBREDDIT)
+        print("Subreddit not found: " + SUBREDDIT)
         break
     for submission in submissions:
         print("Checking " + submission.id + "\n")
         if submission.id not in checked and minDif(submission):
             if submission.link_flair_text != "offer to mod":
-                if submission.is_self:
-                    if postTitle(submission) == False and submission.selftext:
+                if submission.is_self: # Self text
+                    if postTitle(submission) == False and submission.selftext: # If the subreddit is not mentioned in the post title and has content
                         soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
                         a = soup.find_all("a", href=True)
-                        if a and len(a) > 0:
+                        if a and len(a) > 0: # If the content has links
                             href = a[0]["href"] + "/"
                             getsub = findSub(href)
-                            if getsub != None and len(getsub) > 0:
+                            if getsub != None and len(getsub) > 0: # Find the subreddit in the links
                                 commentSub(getsub[0], submission)
-                elif not submission.is_self:
+                elif not submission.is_self: # Link post
                     href = submission.url + "/"
                     getsub = findSub(href)
-                    if getsub != None and len(getsub) > 0:
+                    if getsub != None and len(getsub) > 0: # If a subreddit is found in the link post
                         commentSub(getsub[0], submission)
-                    else:
+                    else: # Search the post title for a subreddit
                         postTitle(submission)
-            else:
+            else: # If it's an "offer to mod" post
                 commentOffer(submission)
 
             checked.append(submission.id)
