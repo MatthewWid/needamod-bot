@@ -79,7 +79,7 @@ def postTitle(post):
 def addSubFound(subList):
     if subList != None and len(subList) > 0:
         for i in subList:
-            i = re.sub("\/?[rR]\/", "", findSub(i + "/")[0])
+            i = (re.sub("\/?[rR]\/", "", findSub(i + "/")[0])).lower()
             if i not in subsFound:
                 subsFound.append(i)
 
