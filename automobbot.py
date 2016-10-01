@@ -42,7 +42,7 @@ def commentSubs(subList, post):
             m = r.get_subreddit(sub, fetch=True)
 
             d1 = datetime.datetime.utcfromtimestamp(m.created_utc)
-            msg += "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str((datetime.datetime.now() - d1).days) + " days\n\n**Subscribers**: " + str(m.subscribers) + "\n\n**Current Mods**: " + str(len(m.get_moderators())) + "\n\n**Over 18**: " + str(m.over18) + "\n\n---\n\n"
+            msg += "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str("{:,}".format((datetime.datetime.now() - d1).days)) + " days\n\n**Subscribers**: " + str("{:,}".format(m.subscribers)) + "\n\n**Current Mods**: " + str("{:,}".format(len(m.get_moderators()))) + "\n\n**Over 18**: " + str(m.over18) + "\n\n---\n\n"
             
             msg += CREDIT
             post.add_comment(msg)
