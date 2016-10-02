@@ -43,11 +43,11 @@ def commentSubs(subList, post):
 
             d1 = datetime.datetime.utcfromtimestamp(m.created_utc)
             msg += "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str("{:,}".format((datetime.datetime.now() - d1).days)) + " days\n\n**Subscribers**: " + str("{:,}".format(m.subscribers)) + "\n\n**Current Mods**: " + str("{:,}".format(len(m.get_moderators()))) + "\n\n**Over 18**: " + str(m.over18) + "\n\n---\n\n"
-            
-            msg += CREDIT
-            post.add_comment(msg)
         except:
             None
+    if msg != "":
+        msg += CREDIT
+        post.add_comment(msg)
 
 def commentOffer(post):
     msg = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**\n\n---\n\n" + CREDIT
