@@ -20,18 +20,18 @@ PASSWORD = "<Password>"
 SUBREDDIT = "<Subreddit>"
 
 # Credit left at the end of every bot message
-CREDIT = "^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot"
+CREDIT = "^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20bot%20feedback&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot"
 
 # Delay between checks (in seconds)
-LOOP_DELAY = 900
+LOOP_DELAY = 600
 
 # Amount of posts to get from /new per loop
-GET_POSTS = 2
+GET_POSTS = 3
 
 # How old a post must be for it to be checked (Allows time for flairing the post)
-WAIT_TIME = 0
+WAIT_TIME = 5
 
-UA = "/r/NeedAMod Automatic Commenter (Update 23) by /u/MatthewMob"
+UA = "/r/NeedAMod Automatic Commenter (Update 24) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -50,7 +50,7 @@ def commentSubs(subList, post):
         post.add_comment(msg)
 
 def commentOffer(post):
-    msg = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How Active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**\n\n---\n\n" + CREDIT
+    msg = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**\n\nThere is no requirement to answer these questions if you are offering services *only* as a CSS mod.\n\n---\n\n" + CREDIT
 
     post.add_comment(msg)
 
@@ -66,7 +66,7 @@ def minDif(post):
     if dif > WAIT_TIME:
         return True
     else:
-        print("Submission too new\n")
+        print("Submission (" + submission.id + ") too new\n")
         return False
 
 def postTitle(post):
@@ -112,6 +112,7 @@ while True:
                 print(subsFound)
             else: # If it's an "offer to mod" post
                 commentOffer(submission)
+                print("offer to mod")
             checked.append(submission.id)
 
     file = open("checked.txt", "w")
