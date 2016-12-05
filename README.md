@@ -18,7 +18,7 @@ For regular posts (where people are looking for mods):
 >
 > ---
 >
-> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot)</sup>
+> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot) | /r/AutoMobBot</sup>
 
 In "Offer to Mod" posts (based on the flair):
 
@@ -31,14 +31,14 @@ In "Offer to Mod" posts (based on the flair):
 > 3.**In your opinion, what the most important quality a mod can have?**
 > 
 > ---
-> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot)</sup>
+> <sup>I am a bot. [Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=) | [Source Code](https://github.com/Matthewmob/needamod-bot) | /r/AutoMobBot</sup>
 
 ## Features
 * Automatically reply with subreddit information of a subreddit mentioned in a post.
 * Automatically reply with suggested questions on "Offer to Mod" posts.
-* Will check and reply only to the last **five** posts made in the last **15 minutes** (by default, can be changed in the config vars)).
+* Will check and reply only to the last **three** posts made in the last **ten minutes** (by default, but this can be changed in the config vars)).
 
-You can find additional, and more detailed information about the bot [here](https://redd.it/4v4z1u).
+You can find additional information about the bot [here](https://redd.it/4v4z1u).
 
 You can find planned features [here](https://redd.it/4v50l2).
 
