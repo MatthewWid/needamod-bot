@@ -20,7 +20,7 @@ PASSWORD = "<Password>"
 SUBREDDIT = "<Subreddit>"
 
 # Credit left at the end of every bot message
-CREDIT = "^I ^am ^a ^bot. [^Feedback](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20bot%20feedback&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot"
+CREDIT = "^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot"
 
 # Delay between checks (in seconds)
 LOOP_DELAY = 600
@@ -31,7 +31,7 @@ GET_POSTS = 3
 # How old a post must be for it to be checked (Allows time for flairing the post)
 WAIT_TIME = 5
 
-UA = "/r/NeedAMod Automatic Commenter (Update 24) by /u/MatthewMob"
+UA = "/r/NeedAMod Automatic Commenter (Update 25) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -108,7 +108,10 @@ while True:
                 elif not submission.is_self: # Link post
                     postTitle(submission)
                     addSubFound(findSub(submission.url + "/"))
-                commentSubs(subsFound, submission)
+                try:
+                    commentSubs(subsFound, submission)
+                except:
+                    print("Bad response from server");
                 print(subsFound)
             else: # If it's an "offer to mod" post
                 commentOffer(submission)
