@@ -31,18 +31,23 @@ GET_POSTS = 3
 # How old a post must be for it to be checked (Allows time for flairing the post)
 WAIT_TIME = 5
 
-UA = "/r/NeedAMod Automatic Commenter (Update 25) by /u/MatthewMob"
+UA = "NeedAMod Subreddit Info and Comment Template Commenter (Update 25) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
 def commentSubs(subList, post):
     msg = ""
+    print(post.link_flair_text)
+    if post.link_flair_text == "css mods needed":
+        msg += "Here are a few questions to inform people who are interested in helping you know what you need:\n\n1. **Are you requesting a specific \"theme\" (entire sub designed around a color, modern look, dark look, etc)?**\n\n2. **Do you need just a few simple things like user flair/link flair, header image, etc?**\n\n3. **Do you need more advanced CSS work done? (For example, drop-down menus, `lang()`, animations, etc.)**\n\n4. **Are you looking for a mod who can create custom art as well as implement it via CSS?**\n\n---\n\n"
     for sub in subList:
         try:
             m = r.get_subreddit(sub, fetch=True)
 
             d1 = datetime.datetime.utcfromtimestamp(m.created_utc)
             msg += "Subreddit Info (/r/" + m.display_name + "):\n\n**Age**: " + str("{:,}".format((datetime.datetime.now() - d1).days)) + " days\n\n**Subscribers**: " + str("{:,}".format(m.subscribers)) + "\n\n**Current Mods**: " + str("{:,}".format(len(m.get_moderators()))) + "\n\n**Over 18**: " + str(m.over18) + "\n\n---\n\n"
+
+            time.sleep(2.1);
         except:
             None
     if msg != "":
@@ -62,8 +67,8 @@ def minDif(post):
     d2 = time.mktime((datetime.datetime.utcnow()).timetuple())
 
     dif = int(d2-d1)/60
-    
-    if dif > WAIT_TIME:
+
+    if dif > 1:
         return True
     else:
         print("Submission (" + submission.id + ") too new\n")
@@ -92,31 +97,34 @@ while True:
     except:
         print("Subreddit not found: " + SUBREDDIT)
         break
-    for submission in submissions:
-        if submission.id not in checked and minDif(submission):
-            print("\nChecking " + submission.id)
-            if submission.link_flair_text != "offer to mod":
-                subsFound = []
-                if submission.is_self: # Self text
-                    postTitle(submission)
-                    if submission.selftext: # If the submission has text content
-                        soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
-                        a = soup.find_all("a", href=True)
-                        if a and len(a) > 0: # If the content has links
-                            for i in a:
-                                addSubFound(findSub(a[0]["href"] + "/"))
-                elif not submission.is_self: # Link post
-                    postTitle(submission)
-                    addSubFound(findSub(submission.url + "/"))
-                try:
-                    commentSubs(subsFound, submission)
-                except:
-                    print("Bad response from server");
-                print(subsFound)
-            else: # If it's an "offer to mod" post
-                commentOffer(submission)
-                print("offer to mod")
-            checked.append(submission.id)
+    try:
+        for submission in submissions:
+            if submission.id not in checked and minDif(submission):
+                print("\nChecking " + submission.id)
+                if submission.link_flair_text != "offer to mod":
+                    subsFound = []
+                    if submission.is_self: # Self text
+                        postTitle(submission)
+                        if submission.selftext: # If the submission has text content
+                            soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
+                            a = soup.find_all("a", href=True)
+                            if a and len(a) > 0: # If the content has links
+                                for i in a:
+                                    addSubFound(findSub(a[0]["href"] + "/"))
+                    elif not submission.is_self: # Link post
+                        postTitle(submission)
+                        addSubFound(findSub(submission.url + "/"))
+                    try:
+                        commentSubs(subsFound, submission)
+                    except:
+                        print("Bad response from server");
+                    print(subsFound)
+                else: # If it's an "offer to mod" post
+                    commentOffer(submission)
+                    print("offer to mod")
+                checked.append(submission.id)
+    except:
+        print("Bad response from server 2");
 
     file = open("checked.txt", "w")
     for post_id in checked:
