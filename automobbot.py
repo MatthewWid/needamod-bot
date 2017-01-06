@@ -109,8 +109,8 @@ while True:
                             soup = bs4.BeautifulSoup(submission.selftext_html, "lxml")
                             a = soup.find_all("a", href=True)
                             if a and len(a) > 0: # If the content has links
-                                for i in a:
-                                    addSubFound(findSub(a[0]["href"] + "/"))
+                                for index, i in enumerate(a):
+                                    addSubFound(findSub(a[index]["href"] + "/"))
                     elif not submission.is_self: # Link post
                         postTitle(submission)
                         addSubFound(findSub(submission.url + "/"))
