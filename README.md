@@ -50,7 +50,7 @@ This is a quick guide on how to set up the bot for hosting on [PythonAnywhere](h
 3. Once you've created your account you should be taken to the dashboard. First we're going to install dependencies:
     1. Under the "Consoles" tab scroll down and under "Start a new console:" click on "Bash". Give it a bit of time to load up.
     2. Once it's loaded type:
-      - `pip install praw --user` *Enter*
+      - `pip install praw==3.5.0 --user` *Enter*
       - `pip install beautifulsoup4 --user` *Enter*
       - `pip install requests --user` *Enter*
       - `pip install datetime --user` *Enter*
