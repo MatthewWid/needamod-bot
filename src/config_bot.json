@@ -1,0 +1,7 @@
+{
+	"subreddit": "matthewmob_csstesting",
+	"credit": "^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot",
+	"loop_delay": 600,
+	"get_posts": 2,
+	"wait_time": 5
+}

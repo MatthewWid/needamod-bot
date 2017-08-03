@@ -1,0 +1,22 @@
+{
+  "name": "needamod_bot",
+  "version": "1.0.0",
+  "description": "Automate the tasks of the /r/NeedaMod mods",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Matthewmob/needamod-bot.git"
+  },
+  "author": "MatthewMob",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Matthewmob/needamod-bot/issues"
+  },
+  "homepage": "https://github.com/Matthewmob/needamod-bot#readme",
+  "dependencies": {
+    "snoocore": "^3.3.1"
+  }
+}
