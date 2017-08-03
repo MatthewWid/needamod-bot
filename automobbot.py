@@ -26,12 +26,12 @@ CREDIT = "^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/c
 LOOP_DELAY = 600
 
 # Amount of posts to get from /new per loop
-GET_POSTS = 3
+GET_POSTS = 6
 
 # How old a post must be for it to be checked (Allows time for flairing the post)
 WAIT_TIME = 5
 
-UA = "NeedAMod Subreddit Info and Comment Template Commenter (Update 25) by /u/MatthewMob"
+UA = "NeedAMod Subreddit Info and Comment Template Commenter (Update 26) by /u/MatthewMob"
 r = praw.Reddit(UA)
 r.login(USERNAME, PASSWORD, disable_warning=True)
 
@@ -55,7 +55,7 @@ def commentSubs(subList, post):
         post.add_comment(msg)
 
 def commentOffer(post):
-    msg = "Here are three questions to help people who want to recruit you know what you're like:\n\n1. **How active are you (Eg, hours per day) and what timezone are you in?**\n\n2. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n3. **In your opinion, what is the most important quality a mod can have?**\n\nThere is no requirement to answer these questions if you are offering services *only* as a CSS mod.\n\n---\n\n" + CREDIT
+    msg = "Here are five questions to help people who want to recruit you know what you're like:\n\n1. **What are your interests/what type of sub would you prefer to mod?**\n\n2. **Are you willing to mod a NSFW sub?**\n\n3. **How active are you (Eg, hours per day) and what timezone are you in?**\n\n4. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n5. **In your opinion, what is the most important quality a mod can have?**\n\nThere is no requirement to answer these questions if you are offering services *only* as a CSS, wiki or bot moderator.\n\n---\n\n" + CREDIT
 
     post.add_comment(msg)
 
