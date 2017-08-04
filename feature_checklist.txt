@@ -1,6 +1,15 @@
-- Repost detection
-- Subreddit stats JSON file
-	- Average subscribers
-	- Average subreddit age
-	- Percentage of rule breaking subreddits
-- Automatically report rule-breaking posts
+- Repost detection.
+
+- Subreddit stats JSON file.
+
+- Automatically report rule-breaking posts.
+
+- Have a buffer of subreddits to be checked, so if many posts are being submitted, it won't miss once that are awaiting evaluation.
+	Eg:
+	- Post is posted.
+	- Wait time is 5 minutes. Loop delay is 10 minutes. Get posts are set to the 3 per loop.
+	- Post is postponed evaluation to wait until wait time is up.
+	- Three more posts are posted.
+	- Loop delay runs 10 minutes later, and the original post is missed because it is then not the first 3.
+
+- Have the configuration file hosted remotely, and be accessible and editable by all the mods.

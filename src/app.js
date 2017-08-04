@@ -10,7 +10,7 @@ var fs = require("fs");
 		username: "",
 		password: "",
 		scope: [
-			"read", "submit"
+			"read", "submit", "report"
 		]
 	}
 */
@@ -23,7 +23,7 @@ var checked_raw_init = fs.readFileSync(config_bot.checkedFile);
 var checked = JSON.parse(checked_raw_init.toString());
 
 var reddit = new Snoocore({
-	userAgent: "NeedAMod Subreddit Info Commenter (Update 28) by /u/MatthewMob",
+	userAgent: "NeedAMod Subreddit Info Commenter (Update 29) by /u/MatthewMob",
 	oauth: config_oauth
 });
 
@@ -52,13 +52,27 @@ function update() {
 				//logPost(slice.children[i].data.name, "Post already checked: " + slice.children[i].data.name);
 				continue;
 			}
+			var timeDif = (Math.floor((Date.now() / 1000) - slice.children[i].data.created_utc)) / 60;
+			if (timeDif < config_bot.wait_time) {
+				logPost(slice.children[i].data.name, "Post too new to evaluate.")
+				continue;
+			}
+			if (slice.children[i].data.link_flair_text == config_bot.flair_names.mod) {
+				logPost(slice.children[i].data.name, "Skipping mod post");
+				continue;
+			}
 			(function() {
 				var post_id = slice.children[i].data.name;
 				var msg = "";
-				var report_reason = "AutoMobBot - ";
 				var reAll = /\/?[rR]\/[a-zA-Z?_\d]+/g;
 				var reRemove = /\/?[rR]\//g;
 				var allText = reAll.exec(slice.children[i].data.title);
+				var canReport = false;
+				var reportReason = config_bot.reports.prefix;
+
+				if (slice.children[i].data.link_flair_text == config_bot.flair_names.css) {
+					msg += config_bot.cssmods_text;
+				}
 				if (allText) {
 					var subName = allText[0].replace(reRemove, "");
 					
@@ -66,8 +80,8 @@ function update() {
 						var age = Math.floor(((Date.now() / 1000) - result.data.created) / 60 / 60 / 24);
 						var subscribers = result.data.subscribers;
 						var currentMods = 0;
-						var nsfw = result.data.over18;
 						var minimumPosts = false;
+						var nsfw = result.data.over18;
 
 						reddit("/r/" + subName + "/new").listing().then(function(slice) {
 							if (slice.children.length >= config_bot.minimum_posts) {
@@ -88,14 +102,39 @@ function update() {
 
 							return reddit("/r/" + subName + "/new").listing();
 						}).then(function() { // Submit
-							reddit("/api/comment").post({
-								text: msg,
-								thing_id: post_id
-							}).then(function() {
-								console.log(msg);
+							if (config_bot.interact) {
+								reddit("/api/comment").post({
+									text: msg,
+									thing_id: post_id
+								}).then(function() {
+									logPost(post_id, "Commenting: " + result.data.display_name);
+									addToChecked(post_id);
+								});
+							} else {
 								logPost(post_id, "Commenting: " + result.data.display_name);
 								addToChecked(post_id);
-							});
+							}
+
+							// Report here
+							if (config_bot.reports.should_report && config_bot.interact) {
+								if (subscribers < config_bot.minimum_subs) {
+									reportReason += config_bot.reports.reason_subs;
+									canReport = true;
+								}
+								if (!minimumPosts) {
+									reportReason += config_bot.reports.reason_posts;
+									canReport = true;
+								}
+
+								if (canReport) {
+									reddit("/api/report").post({
+										reason: reportReason,
+										thing_id: post_id
+									}).then(function() {
+										logPost(post_id, "Reporting for: " + reportReason);
+									});
+								}
+							}
 						});
 					}, function() {
 						logPost(post_id, "/r/" + subName + " is non-accessible.");
@@ -112,4 +151,5 @@ function update() {
 		logPost("", "/r/" + config_bot.subreddit + " is not accessible.");
 	});
 }
-var loop = setInterval(update, config_bot.wait_time * 1000);
+update();
+var loop = setInterval(update, config_bot.loop_delay * 1000 * 60 );

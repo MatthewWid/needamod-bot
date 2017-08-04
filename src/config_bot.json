@@ -1,9 +1,25 @@
 {
 	"subreddit": "matthewmob_csstesting",
 	"credit": "^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot",
-	"loop_delay": 600,
-	"get_posts": 3,
-	"wait_time": 20,
+	"loop_delay": 5,
+	"get_posts": 1,
+	"wait_time": 0,
 	"minimum_posts": 25,
-	"checkedFile": "./data/checked.json"
+	"minimum_subs": 50,
+	"checkedFile": "./data/checked.json",
+	"interact": true,
+	"reports": {
+		"should_report": true,
+		"prefix": "AutoMobBot -",
+		"reason_mod": " User not moderator of subreddit.",
+		"reason_subs": " Insufficient subscribers.",
+		"reason_posts": " Insufficient posts."
+	},
+	"flair_names": {
+		"mod": "Mod Post",
+		"css": "css mods needed",
+		"mods": "mods needed",
+		"offer": "offer to mod"
+	},
+	"cssmods_text": "Here are a few questions to inform people who are interested in helping you know what you need:\n\n1. **Are you requesting a specific \"theme\" (entire sub designed around a color, modern look, dark look, etc)?**\n\n2. **Do you need just a few simple things like user flair/link flair, header image, etc?**\n\n3. **Do you need more advanced CSS work done? (For example, drop-down menus, `lang()`, animations, etc.)**\n\n4. **Are you looking for a mod who can create custom art as well as implement it via CSS?**\n\n---\n\n"
 }
