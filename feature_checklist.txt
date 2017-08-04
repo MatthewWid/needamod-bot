@@ -1,0 +1,6 @@
+- Repost detection
+- Subreddit stats JSON file
+	- Average subscribers
+	- Average subreddit age
+	- Percentage of rule breaking subreddits
+- Automatically report rule-breaking posts
