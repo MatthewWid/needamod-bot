@@ -14,16 +14,15 @@ var fs = require("fs");
 		]
 	}
 */
-var config_oauth = require("./src/config_oauth.json");
-var config_bot = require("./src/config_bot.json");
+var config_oauth = JSON.parse(fs.readFileSync("config_ouath.json"));
+var config_bot = JSON.parse(fs.readFileSync("config_bot.json"));
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 
 // Read file into checked
-var checked_raw_init = fs.readFileSync(config_bot.checkedFile);
-var checked = JSON.parse(checked_raw_init.toString());
+var checked = JSON.parse(fs.readFileSync(config_bot.checkedFile));
 
 var reddit = new Snoocore({
-	userAgent: "NeedAMod Subreddit Info Commenter (Update 29) by /u/MatthewMob",
+	userAgent: "NeedAMod Subreddit Info Commenter (Update 30) by /u/MatthewMob",
 	oauth: config_oauth
 });
 
