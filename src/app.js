@@ -14,8 +14,8 @@ var fs = require("fs");
 		]
 	}
 */
-var config_oauth = require("./config_oauth.json");
-var config_bot = require("./config_bot.json");
+var config_oauth = require("./src/config_oauth.json");
+var config_bot = require("./src/config_bot.json");
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 
 // Read file into checked
