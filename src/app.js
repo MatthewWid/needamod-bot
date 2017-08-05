@@ -1,6 +1,5 @@
 var Snoocore = require("snoocore");
 var fs = require("fs");
-var path = require("path");
 /*
 	Example config_oauth.json:
 
@@ -15,15 +14,16 @@ var path = require("path");
 		]
 	}
 */
-var config_oauth = JSON.parse(fs.readFileSync(path.dirname("./config_oauth.json.json") + "./src/config_oauth.json"));
-var config_bot = JSON.parse(fs.readFileSync(path.dirname("./config_bot.json") + "./src/config_bot.json"));
+var config_oauth = require("./config_oauth.json");
+var config_bot = require("./config_bot.json");
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 
 // Read file into checked
-var checked = JSON.parse(fs.readFileSync(config_bot.checkedFile));
+var checked_raw_init = fs.readFileSync(config_bot.checkedFile);
+var checked = JSON.parse(checked_raw_init.toString());
 
 var reddit = new Snoocore({
-	userAgent: "NeedAMod Subreddit Info Commenter (Update 30) by /u/MatthewMob",
+	userAgent: "NeedAMod Subreddit Info Commenter (Update 29) by /u/MatthewMob",
 	oauth: config_oauth
 });
 
