@@ -1,5 +1,6 @@
 var Snoocore = require("snoocore");
 var fs = require("fs");
+var path = require("path");
 /*
 	Example config_oauth.json:
 
@@ -14,8 +15,8 @@ var fs = require("fs");
 		]
 	}
 */
-var config_oauth = JSON.parse(fs.readFileSync("./src/config_ouath.json"));
-var config_bot = JSON.parse(fs.readFileSync("./src/config_bot.json"));
+var config_oauth = JSON.parse(fs.readFileSync(path.dirname("./config_oauth.json.json") + "./src/config_oauth.json"));
+var config_bot = JSON.parse(fs.readFileSync(path.dirname("./config_bot.json") + "./src/config_bot.json"));
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 
 // Read file into checked
