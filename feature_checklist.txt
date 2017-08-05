@@ -2,8 +2,6 @@
 
 - Subreddit stats JSON file.
 
-- Automatically report rule-breaking posts.
-
 - Have a buffer of subreddits to be checked, so if many posts are being submitted, it won't miss once that are awaiting evaluation.
 	Eg:
 	- Post is posted.
@@ -13,3 +11,5 @@
 	- Loop delay runs 10 minutes later, and the original post is missed because it is then not the first 3.
 
 - Have the configuration file hosted remotely, and be accessible and editable by all the mods.
+
+- Fetch user stats and comment them (Karma, Top moderated subreddits, account age)
