@@ -17,7 +17,8 @@
 	},
 	"homepage": "https://github.com/Matthewmob/needamod-bot#readme",
 	"dependencies": {
-		"snoocore": "^3.3.1"
+		"snoocore": "^3.3.1",
+		"fs": "0.0.1-security"
 	},
 	"engines": {
 		"node": "4.5.0"

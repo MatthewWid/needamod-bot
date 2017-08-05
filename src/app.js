@@ -14,8 +14,8 @@ var fs = require("fs");
 		]
 	}
 */
-var config_oauth = JSON.parse(fs.readFileSync("config_ouath.json"));
-var config_bot = JSON.parse(fs.readFileSync("config_bot.json"));
+var config_oauth = JSON.parse(fs.readFileSync("./src/config_ouath.json"));
+var config_bot = JSON.parse(fs.readFileSync("./src/config_bot.json"));
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 
 // Read file into checked
