@@ -1,2 +1,3 @@
 node_modules
 src/config_oauth.json
+src/config_db.json

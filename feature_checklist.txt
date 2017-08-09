@@ -1,7 +1,5 @@
 - Repost detection.
 
-- Subreddit stats JSON file.
-
 - Have a buffer of subreddits to be checked, so if many posts are being submitted, it won't miss once that are awaiting evaluation.
 	Eg:
 	- Post is posted.
@@ -12,4 +10,6 @@
 
 - Have the configuration file hosted remotely, and be accessible and editable by all the mods.
 
-- Fetch user stats and comment them (Karma, Top moderated subreddits, account age)
+- Fetch user stats and comment them (Karma, Top moderated subreddits, account age).
+
+- Have bot be able to be turned off remotely (Sort of already possible via Heroku directly).
