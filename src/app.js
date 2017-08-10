@@ -25,9 +25,10 @@ var assert = require("assert");
 		url: "<MongoDB URL>"
 	}
 */
-var config_oauth = JSON.parse(fs.readFileSync(__dirname + "\\config_oauth.json"));
-var config_bot = JSON.parse(fs.readFileSync(__dirname + "\\config_bot.json"));
-var config_db = JSON.parse(fs.readFileSync(__dirname + "\\config_db.json"));
+
+var config_oauth = JSON.parse(fs.readFileSync(__dirname + "/config_oauth.json"));
+var config_bot = JSON.parse(fs.readFileSync(__dirname + "/config_bot.json"));
+var config_db = JSON.parse(fs.readFileSync(__dirname + "/config_db.json"));
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 
 /*
@@ -55,7 +56,7 @@ mongo.connect(config_db.url, function(err, datab) {
 	assert.equal(err, null);
 	console.log("Successfully connected to MongoDB server.");
 
-	var col = datab.collection("posts");
+	var col = datab.collection(config_db.col);
 
 	col.find({}).toArray(function(err, docs) {
 		assert.equal(err, null);
@@ -84,7 +85,7 @@ function main(db) {
 		if (config_bot.checking) {
 			posts.push(data);
 			// Write to MongoDB
-			db.collection("posts").insertOne(data, function(err, result) {
+			db.collection(config_db.col).insertOne(data, function(err, result) {
 				assert.equal(err, null);
 
 				console.log("Successfully written to MongoDB.");
@@ -97,31 +98,39 @@ function main(db) {
 
 	function update() {
 		console.log("Checks started\n");
-		reddit("/r/" + config_bot.subreddit + "/new").listing().then(function(slice) {
+		reddit("/r/" + config_bot.subreddit + "/new").listing({limit: config_bot.get_posts}).then(function(slice_overall) {
+			console.log(slice_overall.children);
 			for (var i = 0; i < config_bot.get_posts; i++) {
-				if (posts.find(function(e) {return e.post_id == slice.children[i].data.name})) { // Check if post has already been checked
-					logPost(slice.children[i].data.name, "Post already checked: " + slice.children[i].data.name);
+				console.log(i);
+				if (posts.find(function(e) {return e.post_id == slice_overall.children[i].data.name})) { // Check if post has already been checked
+					/*
+						BUG:
+						When bot starts all posts that are checked are skipped, but then the next three posts after them are also checked (Not intended)
+					*/
+					//logPost(slice_overall.children[i].data.name, "Post already checked: " + slice_overall.children[i].data.name);
 					continue;
 				}
-				var timeDif = (Math.floor((Date.now() / 1000) - slice.children[i].data.created_utc)) / 60;
+				var timeDif = (Math.floor((Date.now() / 1000) - slice_overall.children[i].data.created_utc)) / 60;
 				if (timeDif < config_bot.wait_time) { // Check if post is old enough to evaluate
-					logPost(slice.children[i].data.name, "Post too new to evaluate.")
+					logPost(slice_overall.children[i].data.name, "Post too new to evaluate.")
 					continue;
 				}
-				if (slice.children[i].data.link_flair_text == config_bot.flair_names.mod) { // Check if post is a mod post
-					logPost(slice.children[i].data.name, "Skipping mod post");
+				if (slice_overall.children[i].data.link_flair_text == config_bot.flair_names.mod) { // Check if post is a mod post
+					logPost(slice_overall.children[i].data.name, "Skipping mod post");
 					continue;
 				}
 				(function() {
-					var post_id = slice.children[i].data.name;
+					var post = slice_overall.children[i];
+					console.log(post.data.title);
+					var post_id = post.data.name;
 					var msg = "";
 					var reAll_sub = /\/?[rR]\/[a-zA-Z?_\d]+/g;
-					var allText_sub = reAll_sub.exec(slice.children[i].data.title);
+					var allText_sub = reAll_sub.exec(post.data.title);
 					var canReport = false;
 					var reportReason = config_bot.reports.prefix;
 
 					if (allText_sub) { // If it is a subreddit
-						if (slice.children[i].data.link_flair_text == config_bot.flair_names.css) {
+						if (post.data.link_flair_text == config_bot.flair_names.css) {
 							msg += config_bot.cssmods_text;
 						}
 						var subName = allText_sub[0].replace(/\/?[rR]\//g, "");
@@ -139,12 +148,16 @@ function main(db) {
 									minimumPosts = true;
 								}
 
-								return reddit("/r/" + subName + "/about/moderators").get();
+								/*
+									BUG:
+									Bot only checks the first 25 moderators, if the author is not in that it will mark them as not being mod.
+								*/
+								return reddit("/r/" + subName + "/about/moderators").get({limit: 100});
 							}).then(function(modlist) { // Construct comment message
 								currentMods = modlist.data.children.length;
 								//console.log(modlist.data.children);
-								//console.log(slice.children[i].data.author);
-								if ((modlist.data.children.findIndex(function(e) {return e.name == slice.children[i].data.author;})) != -1) {
+								//console.log(post.data.author);
+								if ((modlist.data.children.findIndex(function(e) {return e.name == post.data.author;})) != -1) {
 									isMod = true;
 								}
 
@@ -192,9 +205,11 @@ function main(db) {
 								}
 
 								logPost(post_id, "Commenting: " + result.data.display_name);
+								console.log(post.data.author);
+								console.log(post_id);
 								addToChecked({
 									post_id: post_id,
-									author: slice.children[i].data.author,
+									author: post.data.author,
 									type: "subreddit",
 									time_checked: Date.now() / 1000,
 									didReport: canReport,
@@ -214,7 +229,7 @@ function main(db) {
 							logPost(post_id, "/r/" + subName + " is non-accessible.");
 							addToChecked({
 								post_id: post_id,
-								author: slice.children[i].data.author,
+								author: post.data.author,
 								type: "noaccess",
 								time_checked: Date.now() / 1000,
 								didReport: canReport,
@@ -227,7 +242,7 @@ function main(db) {
 						});
 					} else { // If it is a user
 						var reAll_user = /\/?[uU]\/[a-zA-Z?_\d]+/g;
-						var allText_user = reAll_user.exec(slice.children[i].data.title);
+						var allText_user = reAll_user.exec(post.data.title);
 						var userName = allText_user[0].replace(/\/?[uU]\//g, "");
 						if (allText_user) {
 							msg += config_bot.offermod_text;
@@ -241,7 +256,7 @@ function main(db) {
 							logPost(post_id, "Commenting: " + allText_user[0]);
 							addToChecked({
 								post_id: post_id,
-								author: slice.children[i].data.author,
+								author: post.data.author,
 								type: "user",
 								time_checked: Date.now() / 1000,
 								didReport: canReport,
