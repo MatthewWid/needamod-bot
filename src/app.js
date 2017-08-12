@@ -99,9 +99,7 @@ function main(db) {
 	function update() {
 		console.log("Checks started\n");
 		reddit("/r/" + config_bot.subreddit + "/new").listing({limit: config_bot.get_posts}).then(function(slice_overall) {
-			console.log(slice_overall.children);
 			for (var i = 0; i < config_bot.get_posts; i++) {
-				console.log(i);
 				if (posts.find(function(e) {return e.post_id == slice_overall.children[i].data.name})) { // Check if post has already been checked
 					/*
 						BUG:
@@ -121,7 +119,6 @@ function main(db) {
 				}
 				(function() {
 					var post = slice_overall.children[i];
-					console.log(post.data.title);
 					var post_id = post.data.name;
 					var msg = "";
 					var reAll_sub = /\/?[rR]\/[a-zA-Z?_\d]+/g;
@@ -143,7 +140,7 @@ function main(db) {
 							var nsfw = result.data.over18;
 							var isMod = false;
 
-							reddit("/r/" + subName + "/new").listing().then(function(slice_new) {
+							reddit("/r/" + subName + "/new").listing({limit: config_bot.minimum_posts + 2}).then(function(slice_new) {
 								if (slice_new.children.length >= config_bot.minimum_posts) {
 									minimumPosts = true;
 								}
@@ -205,8 +202,6 @@ function main(db) {
 								}
 
 								logPost(post_id, "Commenting: " + result.data.display_name);
-								console.log(post.data.author);
-								console.log(post_id);
 								addToChecked({
 									post_id: post_id,
 									author: post.data.author,
