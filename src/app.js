@@ -238,8 +238,8 @@ function main(db) {
 					} else { // If it is a user
 						var reAll_user = /\/?[uU]\/[a-zA-Z?_\d]+/g;
 						var allText_user = reAll_user.exec(post.data.title);
-						var userName = allText_user[0].replace(/\/?[uU]\//g, "");
 						if (allText_user) {
+							var userName = allText_user[0].replace(/\/?[uU]\//g, "");
 							msg += config_bot.offermod_text;
 							msg += config_bot.credit;
 							if (config_bot.interact) {
