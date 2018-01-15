@@ -158,12 +158,19 @@ function main(db) {
 									isMod = true;
 								}
 
+								console.log(age);
+								console.log(subscribers);
+								console.log(currentMods);
 								msg += "Subreddit Info (/r/" + result.data.display_name + "):\n\n";
 								msg += "**Age**: " + decimalsInNum(age) + " days\n\n";
 								msg += "**Subscribers**: " + decimalsInNum(subscribers) + "\n\n";
 								msg += "**Current Mods**: " + decimalsInNum(currentMods) + "\n\n";
 								msg += "**At Least 25 Posts**: " + minimumPosts.toString().capitalise() + "\n\n";
-								msg += "**Over 18**: " + nsfw.toString().capitalise();
+								if (nsfw) {
+									msg += "**NSFW**: Yes";
+								} else {
+									msg += "**NSFW**: No";
+								}
 								msg += config_bot.credit;
 							}).then(function() { // Submit
 								if (config_bot.interact) {
