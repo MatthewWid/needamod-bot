@@ -47,10 +47,10 @@ function main(db) {
 	function addToChecked(data) {
 		if (config_bot.checking) {
 			allPosts.push(data);
-			db.collection(config_db.col).insertOne(data, function(err, result) {
+			db.db("needamod-subreddits").collection(config_db.col).insertOne(data, function(err, result) {
 				checkErrorBlank(err);
 				log("Successfully written to database.");
-			})
+			});
 		}
 	}
 	// Capitalise the string
@@ -60,7 +60,8 @@ function main(db) {
 
 	// Main function of the bot that is called each loop
 	function update() {
-		log("Checks started");
+		var timeNow = new Date();
+		log("Checks started (" + timeNow.toLocaleTimeString("en-US") + ")");
 
 		r.getSubreddit(config_bot.subreddit).getNew({limit: config_bot.get_posts}).then((posts) => {
 			// Quickly filter and remove posts that cannot be checked, then return a list of posts ready to check
@@ -97,6 +98,7 @@ function main(db) {
 					var allText_sub = /\/?[rR]\/[a-zA-Z?_\d]+/g.exec(posts[i].title);
 					var allText_user = /\/?[uU]\/[a-zA-Z?_\d]+/g.exec(posts[i].title);
 					var msg = "";
+					var isMod = false;
 					var canReport = false;
 					var reportReason = config_bot.reports.prefix;
 
@@ -107,16 +109,113 @@ function main(db) {
 						}
 
 						var subName = allText_sub[0].replace(/\/?[rR]\//g, "");
+						var subInfo;
 						promises.push(
 							r.getSubreddit(subName).fetch().then((sub) => {
-								var sub_name = sub.display_name;
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-								msg += "Subreddit Info (/r/" + sub.display_name + "):\n\n";
-								msg += "**Age**: " + formatNum()
+								subInfo = {
+									name: sub.display_name,
+									age: Math.floor((Date.now() / 1000 - sub.created_utc) / 60 / 60 / 24),
+									subscribers: sub.subscribers,
+									nsfw: sub.over18,
+									sub: sub
+								};
+
+								msg += "Subreddit Info (/r/" + subInfo.name + "):\n\n";
+								msg += "**Age**: " + formatNum(subInfo.age) + " days\n\n";
+								msg += "**Subscribers**: " + formatNum(subInfo.subscribers) + "\n\n";
+
+								return sub.getModerators();
+							}).then((mods) => {
+								subInfo.currentMods = mods.length;
+
+								isMod = mods.find((mod) => {
+									return mod.name == posts[i].author.name;
+								}) ? true : false;
+
+								msg += "**Current Mods**: " + subInfo.currentMods + "\n\n";
+
+								return subInfo.sub.getNew({limit: config_bot.minimum_posts});
+							}).then((subPosts) => {
+								subInfo.minimumPosts = subPosts.length >= config_bot.minimum_posts;
+
+								msg += "**At Least 25 Posts**: " + (subPosts.length >= config_bot.minimum_posts ? "Yes" : "No") + "\n\n";
+								msg += "**NSFW**: " + (subInfo.nsfw ? "Yes" : "No") + "\n\n";
+								msg += config_bot.credit;
+
+								if (config_bot.interact) {
+									return posts[i].reply(msg);
+								} else {
+									return;
+								}
+							}).then(() => {
+								if (config_bot.reports.should_report) {
+									var reportReason = config_bot.reports.prefix;
+
+									if (subInfo.subscribers < config_bot.minimum_subs) {
+										reportReason += config_bot.reports.reason_subs;
+										canReport = true;
+									}
+									if (!subInfo.minimumPosts) {
+										reportReason += config_bot.reports.reason_posts;
+										canReport = true;
+									}
+									if (!isMod) {
+										reportReason += config_bot.reports.reason_mod;
+										canReport = true;
+									}
+									// TODO:
+									// Add checking whether OP is moderator of subreddit
+
+									if (canReport) {
+										if (config_bot.interact) {
+											return posts[i].report(
+												{
+													reason: reportReason
+												}
+											)
+										}
+									}
+								}
+
+								return;
+							}).then(() => {
+								addToChecked({
+								 	post_id: posts[i].id,
+								 	author: posts[i].author.name,
+								 	type: "subreddit",
+								 	timeChecked: Date.now() / 1000,
+								 	didReport: canReport,
+								 	subreddit: {
+								 		subName: subInfo.name,
+								 		age: subInfo.age,
+								 		subscribers: subInfo.subscribers,
+								 		currentMods: subInfo.currentMods,
+								 		minimumPosts: subInfo.minimumPosts,
+								 		nsfw: subInfo.nsfw,
+								 		isMod: isMod
+								 	},
+								 	user: {}
+								});
 							})
 						);
 					} else if (allText_user) { // If the title has a user
-						// Code...
+						var userName = allText_user[0].replace(/\/?[uU]\//g, "");
+
+						msg += config_bot.offermod_text;
+						msg += config_bot.credit;
+						promises.push(
+							posts[i].reply(msg).then(() => {
+								addToChecked({
+									post_id: posts[i].id,
+								 	author: posts[i].author.name,
+								 	type: "subreddit",
+								 	timeChecked: Date.now() / 1000,
+								 	didReport: canReport,
+								 	subreddit: {},
+								 	user: {}
+								});
+							})
+						);
 					}
 				})();
 			}
