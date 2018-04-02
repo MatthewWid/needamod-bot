@@ -2,6 +2,19 @@ var snoowrap = require("snoowrap");
 var fs = require("fs");
 var mongo = require("mongodb").MongoClient;
 
+/*
+	Template for config_ouath.js:
+		userAgent: String,
+		clientId: String,
+		clientSecret: String,
+		username: String,
+		password: String
+
+	Template for config_db.js:
+		url: String,
+		col: String
+*/
+
 const config_oauth = JSON.parse(fs.readFileSync(__dirname + "/config_oauth.json"));
 const config_bot = JSON.parse(fs.readFileSync(__dirname + "/config_bot.json"));
 const config_db = JSON.parse(fs.readFileSync(__dirname + "/config_db.json"));
@@ -49,7 +62,6 @@ function main(db) {
 			allPosts.push(data);
 			db.db("needamod-subreddits").collection(config_db.col).insertOne(data, function(err, result) {
 				checkErrorBlank(err);
-				log("Successfully written to database.");
 			});
 		}
 	}
@@ -149,8 +161,6 @@ function main(db) {
 								}
 							}).then(() => {
 								if (config_bot.reports.should_report) {
-									var reportReason = config_bot.reports.prefix;
-
 									if (subInfo.subscribers < config_bot.minimum_subs) {
 										reportReason += config_bot.reports.reason_subs;
 										canReport = true;
@@ -163,8 +173,6 @@ function main(db) {
 										reportReason += config_bot.reports.reason_mod;
 										canReport = true;
 									}
-									// TODO:
-									// Add checking whether OP is moderator of subreddit
 
 									if (canReport) {
 										if (config_bot.interact) {
@@ -179,6 +187,7 @@ function main(db) {
 
 								return;
 							}).then(() => {
+								log(posts[i].id + " | Commenting | Subreddit");
 								addToChecked({
 								 	post_id: posts[i].id,
 								 	author: posts[i].author.name,
@@ -200,32 +209,127 @@ function main(db) {
 						);
 					} else if (allText_user) { // If the title has a user
 						var userName = allText_user[0].replace(/\/?[uU]\//g, "");
+						var userInfo;
 
-						msg += config_bot.offermod_text;
-						msg += config_bot.credit;
+						
+
+						/*
+							Total subreddits moderated
+							Top 3 subreddits they moderate (And show their subscribers)
+							Karma
+							Age
+						*/
+
 						promises.push(
-							posts[i].reply(msg).then(() => {
+							r.getUser(posts[i].author.name).fetch().then((user) => {
+								userInfo = {
+									name: posts[i].author.name,
+									totalKarma: user.link_karma + user.comment_karma,
+									age: Math.floor((Date.now() / 1000 - user.created_utc) / 60 / 60 / 24)
+								};
+								msg += "User Info (/u/" + userInfo.name + "):\n\n";
+								msg += "**Total Karma**: " + formatNum(userInfo.totalKarma) + "\n\n";
+								msg += "**Account Age**: " + formatNum(userInfo.age) + " days\n\n";
+								msg += "---\n\n";
+								msg += config_bot.offermod_text;
+								msg += config_bot.credit;
+
+								return posts[i].reply(msg);
+							}).then(() => {
+								if (config_bot.reports.should_report) {
+									if (userInfo.totalKarma < 500) {
+										reportReason += config_bot.reports.reason_karma;
+										canReport = true;
+									}
+									if (userInfo.age < 90) {
+										reportReason += config_bot.reports.reason_age;
+										canReport = true;
+									}
+
+									if (canReport) {
+										if (config_bot.interact) {
+											return posts[i].report(
+												{
+													reason: reportReason
+												}
+											)
+										}
+									}
+								}
+
+								return;
+							}).then(() => {
+								log(posts[i].id + " | Commenting | User");
 								addToChecked({
-									post_id: posts[i].id,
+								 	post_id: posts[i].id,
 								 	author: posts[i].author.name,
-								 	type: "subreddit",
+								 	type: "user",
 								 	timeChecked: Date.now() / 1000,
 								 	didReport: canReport,
 								 	subreddit: {},
-								 	user: {}
+								 	user: {
+								 		totalKarma: userInfo.totalKarma,
+								 		age: userInfo.age
+								 	}
 								});
 							})
+							// posts[i].reply(msg).then(() => {
+							// 	log(posts[i].id + " | Commenting | User");
+							// 	addToChecked({
+							// 		post_id: posts[i].id,
+							// 	 	author: posts[i].author.name,
+							// 	 	type: "subreddit",
+							// 	 	timeChecked: Date.now() / 1000,
+							// 	 	didReport: canReport,
+							// 	 	subreddit: {},
+							// 	 	user: {}
+							// 	});
+							// })
 						);
 					}
 				})();
 			}
 			// Wait for all subreddits to be processed, then end program
-			Promise.all(promises).then(function(values) {
+			Promise.all(promises).then((values) => {
 				db.close();
 				log("Checks finished");
 				process.exit();
 			});
 		});
+
+		// r.getUnreadMessages().then((messages) => {
+		// 	for (var l = 0; l < messages.length; l++) {
+		// 		(function() {
+		// 			const i = l;
+		// 			var totalSubs = 0;
+		// 			var subPromises = [];
+
+		// 			if (messages[i].subject.toLowerCase().indexOf("flair") != -1) {
+		// 				var subreddits = messages[i].body.split(" ");
+
+		// 				for (var j = 0; j < subreddits.length; j++) {
+		// 					var sub = subreddits[j].replace(/\/?[rR]\//g, "");
+		// 					subPromises.push(
+		// 						r.getSubreddit(sub).fetch().then((subInfo) {
+
+		// 						});
+		// 					);
+		// 				}
+
+		// 				Promise.all(subPromises).then((values) => {
+		// 					log("All subreddits processed!");
+		// 				});
+		// 			}
+		// 		})();
+		// 	}
+
+		// 	// Only need one promise array to store subreddits, not inbox messages.
+		// 	// Each message is an array item - not its own promise.
+		// }).then(() => {
+		// 	db.close();
+		// 	log("Checks finished");
+		// 	process.exit();
+		// });
 	}
 	update();
 }
