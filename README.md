@@ -1,6 +1,6 @@
 ## What is this?
-This is a bot that will automate the job of moderators on /r/needamod by automatically commenting to posts with things that usually moderators would have to do manually.  
-This bot was created by me, [/u/MatthewMob](https://www.reddit.com/user/MatthewMob/).
+This is a bot that will automate the job of moderators on /r/needamod by automatically commenting to posts with things that moderators would have to do manually.  
+This bot was created by [/u/MatthewMob](https://www.reddit.com/user/MatthewMob/).
 
 The bot has two comment templates.
 
@@ -36,7 +36,8 @@ In "Offer to Mod" posts (based on the flair):
 ## Features
 * Automatically reply with subreddit information of a subreddit mentioned in a post.
 * Automatically reply with suggested questions on "Offer to Mod" posts.
-* Will check and reply only to the last **three** posts made in the last **ten minutes** (by default, but this can be changed in the config vars)).
+* Automatically report posts that don't fit within the criteria of the subreddit rules.
+* Fully customizable via a JSON config (config_bot.json).
 
 You can find additional information about the bot [here](https://redd.it/4v4z1u).
 
@@ -44,4 +45,5 @@ You can find additional information about the bot [here](https://redd.it/4v4z1u)
 To send me feedback on the bot or ask for installation help, send me a [direct message on Reddit](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2Fneedamod%20bot%20feedback&message=).
 
 ## NPM Dependancies
-* Snoocore
+* Snoowrap (>1.15.2)
+* MongoDB (>3.0.5)
