@@ -297,39 +297,72 @@ function main(db) {
 			});
 		});
 
-		// r.getUnreadMessages().then((messages) => {
-		// 	for (var l = 0; l < messages.length; l++) {
-		// 		(function() {
-		// 			const i = l;
-		// 			var totalSubs = 0;
-		// 			var subPromises = [];
+		r.getUnreadMessages().then((messages) => {
+			var promiseArr = [];
 
-		// 			if (messages[i].subject.toLowerCase().indexOf("flair") != -1) {
-		// 				var subreddits = messages[i].body.split(" ");
+			for (var l = 0; l < messages.length; l++) {
+				(function() {
+					const i = l;
 
-		// 				for (var j = 0; j < subreddits.length; j++) {
-		// 					var sub = subreddits[j].replace(/\/?[rR]\//g, "");
-		// 					subPromises.push(
-		// 						r.getSubreddit(sub).fetch().then((subInfo) {
+					if (messages[i].subject.toLowerCase().indexOf("flair") != -1) {
+						var subreddits = messages[i].body.split(" ");
+						// var info = {
+						// 	author: messages[i].author.name,
+						// 	totalSubs: 0
+						// };
+						var subs = [];
 
-		// 						});
-		// 					);
-		// 				}
 
-		// 				Promise.all(subPromises).then((values) => {
-		// 					log("All subreddits processed!");
-		// 				});
-		// 			}
-		// 		})();
-		// 	}
+						for (var j = 0; j < subreddits.length; j++) { // Get each subreddit in the message
+							(function() {
+								var sub = subreddits[j].replace(/\/?[rR]\//g, "");
 
-		// 	// Only need one promise array to store subreddits, not inbox messages.
-		// 	// Each message is an array item - not its own promise.
-		// }).then(() => {
-		// 	db.close();
-		// 	log("Checks finished");
-		// 	process.exit();
-		// });
+								subs.push( // Push each promise to the subs array
+									r.getSubreddit(sub).getModerators().then((mods) => { // Get the mod list
+										if (mods.find((e) => e.name == messages[i].author.name)) { // If they are a moderator of the subreddit
+											return r.getSubreddit(sub).fetch(); // Return the subreddit info to the next promise
+										} else { // If they are not a moderator
+											return false; // Return nothing
+										}
+									}).then((subInfo) => {
+										if (subInfo) { // If they do mod the subreddit, return the subreddits subscribers
+											return subInfo.subscribers;
+										} else {
+											return 0;
+										}
+									})
+								);
+							})();
+						}
+
+						promiseArr.push( // Wait for all promises in the subs array to finish
+							Promise.all(subs).then((values) => { // Take the subscribers of each subreddit in the array
+								console.log(values);
+
+								var totalSubs = 0;
+								values.forEach((e) => { // Add all the subscribers together
+									totalSubs += e;
+								});
+
+								return { // Return the author and the total amount of subscribers they have in their subreddits
+									author: messages[i].author.name,
+									totalSubs: totalSubs
+								};
+							})
+						);
+					}
+				})();
+			}
+
+			return Promise.all(promiseArr);
+		}).then((allReturns) => {
+			// Now go through each item in the array and assign flairs based on their total subscribers
+			console.log(allReturns);
+
+			db.close();
+			log("Checks finished");
+			process.exit();
+		});
 	}
 	update();
 }
