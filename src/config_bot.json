@@ -1,17 +1,18 @@
 {
 	"subreddit": "matthewmob_csstesting",
-	"credit": "---\n\n^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| ^/r/AutoMobBot",
+	"credit": "---\n\n^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot)",
 	"mistake_credit": "If you believe this is a mistake, contact the moderators [here](https://www.reddit.com/message/compose?to=%2Fr%2Fneedamod&subject=Incorrect%20Flair%20Given&message=). Do not reply to this message.\n\n",
+	"debug": true,
 	"loop_delay": 5,
 	"shouldLoop": false,
-	"get_posts": 2,
+	"get_posts": 5,
 	"wait_time": 0,
 	"minimum_posts": 25,
 	"minimum_subs": 50,
-	"checking": false,
+	"checking": true,
 	"interact": true,
 	"reports": {
-		"should_report": false,
+		"should_report": true,
 		"prefix": "AutoMobBot -",
 		"reason_subs": " Insufficient subscribers.",
 		"reason_posts": " Insufficient posts.",
@@ -26,35 +27,44 @@
 		"offer": "offer to mod"
 	},
 	"user_flairs": {
-		"lrn": {
-			"css": 1,
-			"name": "Learning",
-			"min": 15,
-			"max": 4999
+		"categories": {
+			"lrn": {
+				"css": 1,
+				"name": "Learning",
+				"min": 15,
+				"max": 4999
+			},
+			"nov": {
+				"css": 2,
+				"name": "Novice",
+				"min": 5000,
+				"max": 49999
+			},
+			"int": {
+				"css": 3,
+				"name": "Intermediate",
+				"min": 50000,
+				"max": 499999
+			},
+			"adv": {
+				"css": 4,
+				"name": "Advanced",
+				"min": 500000,
+				"max": 4999999
+			},
+			"exp": {
+				"css": 5,
+				"name": "Expert",
+				"min": 5000000
+			}
 		},
-		"nov": {
-			"css": 2,
-			"name": "Novice",
-			"min": 5000,
-			"max": 49999
-		},
-		"int": {
-			"css": 3,
-			"name": "Intermediate",
-			"min": 50000,
-			"max": 499999
-		},
-		"adv": {
-			"css": 4,
-			"name": "Advanced",
-			"min": 500000,
-			"max": 4999999
-		},
-		"exp": {
-			"css": 5,
-			"name": "Expert",
-			"min": 5000000
-		}
+		"text_templates": [
+			"bot",
+			"wiki",
+			"AutoMod",
+			"CSS",
+			"Default"
+		]
 	},
 	"cssmods_text": "Here are a few questions to inform people who are interested in helping you know what you need:\n\n1. **Are you requesting a specific \"theme\" (entire sub designed around a color, modern look, dark look, etc)?**\n\n2. **Do you need just a few simple things like user flair/link flair, header image, etc?**\n\n3. **Do you need more advanced CSS work done? (For example, drop-down menus, `lang()`, animations, etc.)**\n\n4. **Are you looking for a mod who can create custom art as well as implement it via CSS?**\n\n---\n\n",
 	"offermod_text": "Here are five questions to help people who want to recruit you know what you're like:\n\n1. **What are your interests/what type of sub would you prefer to mod?**\n\n2. **Are you willing to mod a NSFW sub?**\n\n3. **How active are you (Eg, hours per day) and what timezone are you in?**\n\n4. **If you see a highly upvoted post, but it doesn't follow the rules, what would you do?**\n\n5. **In your opinion, what is the most important quality a mod can have?**\n\nYou don't have to answer these questions if you are offering services *only* as a CSS, wiki or bot moderator.\n\n"
