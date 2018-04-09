@@ -142,7 +142,6 @@ function main(db) {
 			}).then((posts) => {
 				// Push all promises to subreddit into an array, wait for all promises to be processed in that array
 				var promises = [];
-				loop1:
 				for (var l = 0; l < posts.length; l++) {
 					(function() {
 						const i = l;
@@ -226,7 +225,7 @@ function main(db) {
 									return false;
 								}).then(() => {
 									if (config_bot.interact) {
-										log(posts[i].id + " | Commenting | Subreddit");
+										log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Commenting | Subreddit");
 									} else {
 										debug(posts[i].id + " | Commenting | Subreddit");
 									}
@@ -249,7 +248,7 @@ function main(db) {
 									 	user: {}
 									});
 								}).catch((err) => {
-									log(posts[i].id + " | Error | Getting subreddit: " + subName);
+									log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Error | Getting subreddit: " + subName);
 									addToChecked({
 									 	post_id: posts[i].id,
 									 	author: posts[i].author.name,
@@ -310,7 +309,7 @@ function main(db) {
 									return;
 								}).then(() => {
 									if (config_bot.interact) {
-										log(posts[i].id + " | Commenting | User");
+										log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Commenting | User");
 									} else {
 										debug(posts[i].id + " | Commenting | User");
 									}
@@ -329,7 +328,7 @@ function main(db) {
 									 	}
 									});
 								}).catch((err) => {
-									log(posts[i].id + " | Error | Getting user: " + userName);
+									log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Error | Getting user: " + userName);
 									addToChecked({
 									 	post_id: posts[i].id,
 									 	author: "[deleted]",
@@ -354,7 +353,9 @@ function main(db) {
 		);
 
 		mainPromises.push(
-			r.getInbox({limit: 1, filter: "messages"}).then((messages) => {
+			// r.getInbox({limit: 1, filter: "messages"})
+			// r.getUnreadMessages()
+			r.getUnreadMessages().then((messages) => { // r.getUnreadMessages().then( ...
 				var promiseArr = [];
 
 				for (var l = 0; l < messages.length; l++) {
@@ -365,7 +366,6 @@ function main(db) {
 							var lines = messages[i].body.split("\n\n");
 
 							var rawSubs = lines[0].split(" ");
-							var templates = lines[1].split(" ");
 
 							var subs = [];
 							var subNames = [];
@@ -393,6 +393,9 @@ function main(db) {
 											} else {
 												return 0;
 											}
+										}).catch((err) => {
+											debug(messages[i].id + " | Error | Getting subreddit from message: " + sub);
+											return 0;
 										})
 									);
 								})();
@@ -409,7 +412,7 @@ function main(db) {
 										msg: messages[i],
 										author: messages[i].author,
 										totalSubs: totalSubs,
-										templates: templates
+										templates: lines.length > 1 ? lines[1].split(" ") : []
 									};
 								})
 							);
@@ -422,22 +425,37 @@ function main(db) {
 				// Now go through each item in the array of returned results and assign flairs based on their total subscribers
 				var promiseArr = [];
 
-				function giveFlair(req, text, flair) {
+				function giveFlair(req, flair) {
 					if (config_bot.interact) {
-						log(req.msg.id + " | Flairing | " + (flair != undefined ? flair.name : "No Flair"));
-						if (text != undefined && flair != undefined) { // Give them a flair
+						log(timeNow.toLocaleTimeString("en-US") + " | " + req.msg.id + " | Flairing | " + (flair != undefined ? flair.name : "No Flair"));
+						
+						var flairText = "";
+						var checkedTemps = [];
+						const tempsLower = req.templates.map((e) => e.toLowerCase());
+						for (var x = 0; x < config_bot.user_flairs.text_templates.length; x++) {
+							if (tempsLower.indexOf(config_bot.user_flairs.text_templates[x].toLowerCase()) != -1) {
+								flairText += (checkedTemps.length > 0 ? ", " : "") + config_bot.user_flairs.text_templates[x];
+								checkedTemps.push(config_bot.user_flairs.text_templates[x]);
+							}
+						}
+
+						if (flair != undefined) { // Give them a flair
 							return req.author.assignFlair({
 								subredditName: config_bot.subreddit,
-								text: text,
+								text: flairText,
 								cssClass: flair.css
 							}).then(() => {
-								return req.msg.reply("**You have been given the " + flair.name + " flair** (" + formatNum(req.totalSubs) + " subscribers total).\n\n" + config_bot.mistake_credit + config_bot.credit + " ^| ^Ref.: ^" + req.msg.id);
+								return req.msg.reply("**You have been given the " + flair.name + " flair** (" + formatNum(req.totalSubs) + " subscribers total).\n\n" + (flairText ? "Your flair will now read:\n\n> " + flair.name + " | " + flairText + "\n\n" : "") + config_bot.mistake_credit + config_bot.credit + " ^| ^Ref.: ^" + req.msg.id);
+							}).then(() => {
+								return req.msg.markAsRead();
 							});
 						} else { // If text and CSS have not been supplied, remove their flair
 							return req.author.assignFlair({
 								subredditName: config_bot.subreddit
 							}).then(() => {
 								return req.msg.reply("**Your flair has been removed**.\n\n" + config_bot.mistake_credit + config_bot.credit + " ^| ^Ref.: ^" + req.msg.id);
+							}).then(() => {
+								return req.msg.markAsRead();
 							});
 						}
 					} else {
@@ -456,7 +474,7 @@ function main(db) {
 					for (var l = 0; l < flairNames.length; l++) {
 						if (fitsCriteria(flairReq.totalSubs, config_bot.user_flairs.categories[flairNames[l]])) {
 							promiseArr.push(
-								giveFlair(flairReq, "", config_bot.user_flairs.categories[flairNames[l]])
+								giveFlair(flairReq, config_bot.user_flairs.categories[flairNames[l]])
 							);
 							continue loop1;
 						}
@@ -468,9 +486,7 @@ function main(db) {
 					);
 				}
 
-				return Promise.all(promiseArr).then(() => {
-					return;
-				});
+				return Promise.all(promiseArr);
 			})
 		);
 
