@@ -268,8 +268,9 @@ function main(db) {
 
 							promises.push(
 								r.getUser(userName).fetch().then((user) => {
+									debug(user);
 									userInfo = {
-										name: userName,
+										name: user.name,
 										totalKarma: user.link_karma + user.comment_karma,
 										ageDays: Math.floor((Date.now() / 1000 - user.created_utc) / 60 / 60 / 24),
 										realAge: Math.floor((Date.now() / 1000 - user.created_utc))
