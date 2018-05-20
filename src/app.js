@@ -91,7 +91,7 @@ function main(db) {
 
 		return msg;
 	}
-	// Add a post to the checked list and write it to the MongoDB
+	// Add a post to the checked list and write it to MongoDB
 	function addToChecked(data) {
 		if (config_bot.checking) {
 			allPosts.push(data);
@@ -189,7 +189,7 @@ function main(db) {
 								}).then((subPosts) => {
 									subInfo.minimumPosts = subPosts.length >= config_bot.minimum_posts;
 
-									msg += "**At Least 25 Posts**: " + (subPosts.length >= config_bot.minimum_posts ? "Yes" : "No") + "\n\n";
+									//msg += "**At Least 25 Posts**: " + (subPosts.length >= config_bot.minimum_posts ? "Yes" : "No") + "\n\n";
 									msg += "**NSFW**: " + (subInfo.nsfw ? "Yes" : "No") + "\n\n";
 									msg += config_bot.credit;
 
@@ -288,11 +288,11 @@ function main(db) {
 									}
 								}).then(() => {
 									if (config_bot.reports.should_report) {
-										if (userInfo.totalKarma < 500) {
+										if (userInfo.totalKarma < config_bot.minimum_karma) {
 											reportReason += config_bot.reports.reason_karma;
 											canReport = true;
 										}
-										if (userInfo.ageDays < 90) {
+										if (userInfo.ageDays < config_bot.minimum_age) {
 											reportReason += config_bot.reports.reason_age;
 											canReport = true;
 										}
@@ -342,6 +342,17 @@ function main(db) {
 									});
 								})
 							);
+						} else {
+							debug(posts[i].id + " | Error | Not subreddit or user");
+							addToChecked({
+							 	post_id: posts[i].id,
+							 	author: posts[i].author.name,
+							 	type: "subreddit",
+							 	timeChecked: Date.now() / 1000,
+							 	didReport: canReport,
+							 	subreddit: {},
+							 	user: {}
+							});
 						}
 					})();
 				}
