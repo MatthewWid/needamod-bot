@@ -150,7 +150,7 @@ function main(db) {
 						var msg = "";
 						var isMod = false;
 						var canReport = false;
-						var reportReason = config_bot.reports.prefix;
+						var reportReason = "";
 
 						if (allText_sub) { // If the title has a subreddit
 							// If the post has a "css mods needed" flair, prepend the comment with the CSS questions
@@ -171,7 +171,7 @@ function main(db) {
 										sub: sub
 									};
 
-									msg += "Subreddit Info (/r/" + subInfo.name + "):\n\n";
+									msg += "Subreddit Info (/r/" + subInfo.name + (subInfo.nsfw ? " **NSFW**" : "") + "):\n\n";
 									msg += "**Age**: " + formatAge(subInfo.realAge) + "\n\n";
 									msg += "**Subscribers**: " + formatNum(subInfo.subscribers) + "\n\n";
 
@@ -190,7 +190,7 @@ function main(db) {
 									subInfo.minimumPosts = subPosts.length >= config_bot.minimum_posts;
 
 									//msg += "**At Least 25 Posts**: " + (subPosts.length >= config_bot.minimum_posts ? "Yes" : "No") + "\n\n";
-									msg += "**NSFW**: " + (subInfo.nsfw ? "Yes" : "No") + "\n\n";
+									//msg += "**NSFW**: " + (subInfo.nsfw ? "Yes" : "No") + "\n\n";
 									msg += config_bot.credit;
 
 									if (config_bot.interact) {
@@ -375,12 +375,13 @@ function main(db) {
 						const i = l;
 
 						if (messages[i].subject.toLowerCase().indexOf("flair") != -1) {
-							var lines = messages[i].body.split("\n\n");
+							var lines = messages[i].body.replace(/(\[|\])/g, "").trim().split("\n\n");
+							debug(lines);
 
-							var rawSubs = lines[0].split(" ");
+							var rawSubs = lines[0].split(" "); // The subreddit names ripped from the message
 
-							var subs = [];
-							var subNames = [];
+							var subs = []; // Stores subreddit information
+							var subNames = []; // Just the subreddit names alone for the purpose of checking duplicates
 
 							for (var j = 0; j < Math.min(rawSubs.length, 25); j++) { // Get each subreddit in the message
 								(function() {

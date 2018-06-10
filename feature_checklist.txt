@@ -1,5 +1,0 @@
-- Repost detection.
-
-- Have the configuration file hosted remotely, and be accessible and editable by all the mods.
-
-- Website listing all posts categorized by subscribers/mods/age/etc. that is filterable.

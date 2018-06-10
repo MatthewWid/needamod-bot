@@ -1,10 +1,8 @@
 {
 	"subreddit": "matthewmob_csstesting",
-	"credit": "---\n\n^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Source ^Code](https://github.com/Matthewmob/needamod-bot) ^| [^Get ^your ^flair](https://goo.gl/zy79mJ)",
+	"credit": "---\n\n^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Source ^Code](https://github.com/MatthewWid/needamod-bot) ^| [^Get ^your ^flair](https://goo.gl/yUDWZM)",
 	"mistake_credit": "If you believe this is a mistake, contact the moderators [here](https://www.reddit.com/message/compose?to=%2Fr%2Fneedamod&subject=Incorrect%20Flair%20Given&message=). Do not reply to this message.\n\n",
 	"debug": true,
-	"loop_delay": 5,
-	"shouldLoop": false,
 	"get_posts": 1,
 	"wait_time": 0,
 	"minimum_posts": 25,
@@ -15,7 +13,6 @@
 	"interact": true,
 	"reports": {
 		"should_report": true,
-		"prefix": "AutoMobBot -",
 		"reason_subs": " Insufficient subscribers.",
 		"reason_posts": " Insufficient posts.",
 		"reason_mod": " User not moderator of subreddit.",
@@ -61,7 +58,6 @@
 			}
 		},
 		"text_templates": [
-			"Default",
 			"CSS",
 			"AutoMod",
 			"bot",
