@@ -11,9 +11,11 @@
 	"license": "ISC",
 	"dependencies": {
 		"mongodb": "^3.0.5",
+		"request": "^2.87.0",
+		"request-promise": "^4.2.2",
 		"snoowrap": "^1.15.2"
 	},
 	"engines": {
-		"node": "4.5.0"
+		"node": "8.9.1"
 	}
 }

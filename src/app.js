@@ -1,6 +1,8 @@
-var snoowrap = require("snoowrap");
-var fs = require("fs");
-var mongo = require("mongodb").MongoClient;
+const snoowrap = require("snoowrap");
+const fs = require("fs");
+const mongo = require("mongodb").MongoClient;
+const request = require("request");
+const rp = require("request-promise");
 
 /*
 	Template for config_ouath.js:
@@ -363,7 +365,8 @@ function main(db) {
 				debug("Overall | Error | Getting base subreddit: " + config_bot.subreddit);
 			})
 		);
-
+	
+		/*
 		mainPromises.push(
 			// r.getInbox({limit: 1, filter: "messages"})
 			// r.getUnreadMessages()
@@ -375,57 +378,26 @@ function main(db) {
 						const i = l;
 
 						if (messages[i].subject.toLowerCase().indexOf("flair") != -1) {
-							var lines = messages[i].body.replace(/(\[|\])/g, "").trim().split("\n\n");
-							debug(lines);
-
-							var rawSubs = lines[0].split(" "); // The subreddit names ripped from the message
-
-							var subs = []; // Stores subreddit information
-							var subNames = []; // Just the subreddit names alone for the purpose of checking duplicates
-
-							for (var j = 0; j < Math.min(rawSubs.length, 25); j++) { // Get each subreddit in the message
-								(function() {
-									var sub = rawSubs[j].replace(/\/?[rR]\//g, "");
-
-									subs.push( // Push each promise to the subs array
-										r.getSubreddit(sub).getModerators().then((mods) => { // Get the mod list
-											if (mods.find((e) => e.name == messages[i].author.name)) { // If they are a moderator of the subreddit
-												return r.getSubreddit(sub).fetch(); // Return the subreddit info to the next promise
-											} else { // If they are not a moderator
-												return false; // Return nothing
-											}
-										}).then((subInfo) => {
-											if (subInfo) { // If they do mod the subreddit
-												for (var x = 0; x < subNames.length; x++) { // Check that it's not a subreddit already given
-													if (subInfo.name == subNames[x]) {
-														return 0;
-													}
-												}
-												subNames.push(subInfo.name); // Add the subreddit name to the list of given subreddits
-												return subInfo.subscribers; // Return the subreddit subscribers
-											} else {
-												return 0;
-											}
-										}).catch((err) => {
-											debug(messages[i].id + " | Error | Getting subreddit from message: " + sub);
-											return 0;
-										})
-									);
-								})();
-							}
+							var msg = messages[i].body.replace(/(\[|\])/g, "").trim();
 
 							promiseArr.push( // Wait for all promises in the subs array to finish
-								Promise.all(subs).then((values) => { // Take the subscribers of each subreddit in the array
-									var totalSubs = 0;
-									values.forEach((e) => { // Add all the subscribers together
-										totalSubs += e;
-									});
+								rp(`https://www.reddit.com/user/${messages[i].author.name}/moderated_subreddits.json`).then((res) => { // Get subreddits user moderates
+									let bodyJSON = JSON.parse(res);
+
+									let totalSubs = 0;
+									if (bodyJSON.data) {
+										let moderatedSubs = [...bodyJSON.data];
+										moderatedSubs.forEach((e) => {
+											totalSubs += e.subscribers;
+										});
+									}
 
 									return { // Return the author and the total amount of subscribers they have in their subreddits
 										msg: messages[i],
 										author: messages[i].author,
 										totalSubs: totalSubs,
-										templates: lines.length > 1 ? lines[1].split(" ") : []
+										templates: msg.split(" "),
+										modsDefault: false
 									};
 								})
 							);
@@ -435,39 +407,41 @@ function main(db) {
 
 				return Promise.all(promiseArr);
 			}).then((allReturns) => {
+				debug(allReturns);
 				// Now go through each item in the array of returned results and assign flairs based on their total subscribers
 				var promiseArr = [];
 
 				function giveFlair(req, flair) {
+					log(timeNow.toLocaleTimeString("en-US") + " | " + req.msg.id + " | Flairing | " + (flair != undefined ? flair.name : "No Flair"));
 					if (config_bot.interact) {
-						log(timeNow.toLocaleTimeString("en-US") + " | " + req.msg.id + " | Flairing | " + (flair != undefined ? flair.name : "No Flair"));
 						
-						var flairText = "";
-						var checkedTemps = [];
-						const tempsLower = req.templates.map((e) => e.toLowerCase());
-						for (var x = 0; x < config_bot.user_flairs.text_templates.length; x++) {
-							if (tempsLower.indexOf(config_bot.user_flairs.text_templates[x].toLowerCase()) != -1) {
-								flairText += (checkedTemps.length > 0 ? ", " : "") + config_bot.user_flairs.text_templates[x];
-								checkedTemps.push(config_bot.user_flairs.text_templates[x]);
+						let flairText = ""; // Constructed text of skills
+						let checkedTemps = []; // Array of templates already checked to eliminate duplicates
+						const tempsLower = req.templates.map((e) => e.toLowerCase()); // Array of templates given by user
+						const configTemps = config_bot.user_flairs.text_templates; // Array of templates from configuration files
+						for (var x = 0; x < configTemps.length; x++) {
+							if (tempsLower.indexOf(configTemps[x].toLowerCase()) != -1) {
+								flairText += (checkedTemps.length > 0 ? ", " : "") + configTemps[x];
+								checkedTemps.push(configTemps[x]);
 							}
 						}
 
-						if (flair != undefined) { // Give them a flair
-							return req.author.assignFlair({
+						if (flair != undefined) { // If a flair can be given
+							return req.author.assignFlair({ // Give flair
 								subredditName: config_bot.subreddit,
 								text: flairText,
 								cssClass: flair.css
-							}).then(() => {
+							}).then(() => { // Reply to messgae
 								return req.msg.reply("**You have been given the " + flair.name + " flair** (" + formatNum(req.totalSubs) + " subscribers total).\n\n" + (flairText ? "Your flair will now read:\n\n> " + flair.name + " | " + flairText + "\n\n" : "") + config_bot.mistake_credit + config_bot.credit + " ^| ^Ref.: ^" + req.msg.id);
-							}).then(() => {
+							}).then(() => { // Mark message as read
 								return req.msg.markAsRead();
 							});
 						} else { // If text and CSS have not been supplied, remove their flair
-							return req.author.assignFlair({
+							return req.author.assignFlair({ // Give flair
 								subredditName: config_bot.subreddit
-							}).then(() => {
+							}).then(() => { // Reply to message
 								return req.msg.reply("**Your flair has been removed**.\n\n" + config_bot.mistake_credit + config_bot.credit + " ^| ^Ref.: ^" + req.msg.id);
-							}).then(() => {
+							}).then(() => { // Mark message as read
 								return req.msg.markAsRead();
 							});
 						}
@@ -481,27 +455,26 @@ function main(db) {
 
 				loop1:
 				for (var i = 0; i < allReturns.length; i++) {
-					const flairReq = allReturns[i];
-					
-					var flairNames = Object.getOwnPropertyNames(config_bot.user_flairs.categories);
-					for (var l = 0; l < flairNames.length; l++) {
-						if (fitsCriteria(flairReq.totalSubs, config_bot.user_flairs.categories[flairNames[l]])) {
-							promiseArr.push(
-								giveFlair(flairReq, config_bot.user_flairs.categories[flairNames[l]])
-							);
-							continue loop1;
+						const flairReq = allReturns[i];
+						
+						const flairNames = Object.getOwnPropertyNames(config_bot.user_flairs.categories);
+						for (var l = 0; l < flairNames.length; l++) {
+							if (fitsCriteria(flairReq.totalSubs, config_bot.user_flairs.categories[flairNames[l]])) {
+								promiseArr.push(
+									giveFlair(flairReq, config_bot.user_flairs.categories[flairNames[l]])
+								);
+								continue loop1;
+							}
 						}
-					}
-					// TODO:
-					// If a user does not supply any subreddits, keep their current flair and just give them the text they requested
-					promiseArr.push( // If they don't fit the criteria for any flair, remove their current flair
-						giveFlair(flairReq)
-					);
+						promiseArr.push( // If they don't fit the criteria for any flair, remove their current flair
+							giveFlair(flairReq)
+						);
 				}
 
 				return Promise.all(promiseArr);
 			})
 		);
+		*/
 
 		Promise.all(mainPromises).then(() => {
 			db.close();
