@@ -148,7 +148,7 @@ function main(db) {
 					(function() {
 						const i = l;
 						var allText_sub = /\/?[rR]\/[a-zA-Z?_\d]+/g.exec(posts[i].title);
-						var allText_user = /\/?[uU]\/[a-zA-Z?_\d]+/g.exec(posts[i].title);
+						var allText_user = /\/?[uU]\/[a-zA-Z?_?\-\d]+/g.exec(posts[i].title);
 						var msg = "";
 						var isMod = false;
 						var canReport = false;
