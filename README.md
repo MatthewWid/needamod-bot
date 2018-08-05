@@ -15,7 +15,7 @@ For regular posts (where people are looking for mods):
 >
 > ---
 >
-> <sup>I am a bot. [Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) | [Source Code](https://github.com/MatthewWid/needamod-bot) | [Get your flair](https://www.reddit.com/message/compose?to=needamod-bot&subject=Flair%20Request&message=%5BReplace%20this%20text%20with%20a%20list%20of%20skills%20you%20have.%20Anything%20from%20%22css%22%2C%20%22automod%22%2C%20%22bot%22%20or%20%22wiki%22.%20Or%20leave%20this%20text%20box%20as%20is%20or%20empty%20if%20you%20do%20not%20need%20any%20relevant%20skills%20next%20to%20your%20flair.%5D)</sup>
+> <sup>I am a bot. Feedback/Questions | [Source Code](https://github.com/MatthewWid/needamod-bot) | Get your flair</sup>
 
 In "Offer to Mod" posts (based on the flair):
 
@@ -40,7 +40,7 @@ In "Offer to Mod" posts (based on the flair):
 > You do not have to answer these questions if you are offering services *only* as a CSS, wiki or bot moderator.
 > 
 > ---
-> <sup>I am a bot. [Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) | [Source Code](https://github.com/MatthewWid/needamod-bot) | [Get your flair](https://www.reddit.com/message/compose?to=needamod-bot&subject=Flair%20Request&message=%5BReplace%20this%20text%20with%20a%20list%20of%20skills%20you%20have.%20Anything%20from%20%22css%22%2C%20%22automod%22%2C%20%22bot%22%20or%20%22wiki%22.%20Or%20leave%20this%20text%20box%20as%20is%20or%20empty%20if%20you%20do%20not%20need%20any%20relevant%20skills%20next%20to%20your%20flair.%5D)</sup>
+> <sup>I am a bot. Feedback/Questions | [Source Code](https://github.com/MatthewWid/needamod-bot) | Get your flair</sup>
 
 The bot will also give user flairs based on the total amount of subscribers of the subreddits that a user moderates. The reply message template is:
 
@@ -54,7 +54,7 @@ The bot will also give user flairs based on the total amount of subscribers of t
 >
 > ---
 >
-> <sup>I am a bot. [Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) | [Source Code](https://github.com/MatthewWid/needamod-bot) | [Get your flair](https://www.reddit.com/message/compose?to=needamod-bot&subject=Flair%20Request&message=%5BReplace%20this%20text%20with%20a%20list%20of%20skills%20you%20have.%20Anything%20from%20%22css%22%2C%20%22automod%22%2C%20%22bot%22%20or%20%22wiki%22.%20Or%20leave%20this%20text%20box%20as%20is%20or%20empty%20if%20you%20do%20not%20need%20any%20relevant%20skills%20next%20to%20your%20flair.%5D) | Ref.:\<Reference Number\></sup>
+> <sup>I am a bot. Feedback/Questions | [Source Code](https://github.com/MatthewWid/needamod-bot) | Get your flair | Ref.:\<Reference Number\></sup>
 
 ## Features
 * Automatically reply with subreddit information of a subreddit mentioned in a post.
