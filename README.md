@@ -25,6 +25,8 @@ In "Offer to Mod" posts (based on the flair):
 >
 > **Account Age**: \<Age\>
 >
+> **Moderated Subs**: \<Number\> (\<Number\> subscribers total)
+>
 > Here are five questions to help people who want to recruit you know what you're like:
 >
 > 1. **What are your interests/what type of subreddit would you prefer to moderate?**
