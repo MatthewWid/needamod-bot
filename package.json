@@ -7,7 +7,7 @@
 		"start": "node ./src/app.js"
 	},
 	"repository": "https://github.com/MatthewWid/needamod-bot.git",
-	"author": "MatthewMob",
+	"author": "MatthewWid",
 	"license": "ISC",
 	"dependencies": {
 		"mongodb": "^3.0.5",
