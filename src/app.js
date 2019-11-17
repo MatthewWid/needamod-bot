@@ -1,29 +1,23 @@
+const path = require("path");
+require("dotenv").config({
+	path: path.resolve(__dirname, "../variables.env"),
+});
+
 const snoowrap = require("snoowrap");
 const fs = require("fs");
 const mongo = require("mongodb").MongoClient;
-const request = require("request");
-const rp = require("request-promise");
 
-/*
-	Template for config_ouath.js:
-		userAgent: String,
-		clientId: String,
-		clientSecret: String,
-		username: String,
-		password: String
-
-	Template for config_db.js:
-		url: String,
-		col: String
-*/
-
-const config_oauth = JSON.parse(fs.readFileSync(__dirname + "/config_oauth.json"));
 const config_bot = JSON.parse(fs.readFileSync(__dirname + "/config_bot.json"));
-const config_db = JSON.parse(fs.readFileSync(__dirname + "/config_db.json"));
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 config_bot.user_flairs.categories.exp.max = Infinity;
 
-const r = new snoowrap(config_oauth);
+const r = new snoowrap({
+	userAgent: process.env.USERAGENT,
+	clientId: process.env.CLIENTID,
+	clientSecret: process.env.CLIENTSECRET,
+	username: process.env.BOTUSERNAME,
+	password: process.env.BOTPASSWORD
+});
 
 var allPosts = [];
 
@@ -48,12 +42,12 @@ function debug(msg) {
 }
 
 // Connect to MongoDB, collect all previously checked posts, and run the main function
-mongo.connect(config_db.url, function(err, datab) {
+mongo.connect(process.env.DBURL, function(err, datab) {
 	checkErrorBlank(err);
 
 	if (config_bot.checking) {
 		debug("Successfully connected to MongoDB server.");
-		let col = datab.db("needamod-subreddits").collection(config_db.col);
+		let col = datab.db("needamod-subreddits").collection(process.env.DBCOLLECTION);
 		col.find({}).toArray(function(err, docs) {
 			checkErrorBlank(err);
 
@@ -101,7 +95,7 @@ function main(db) {
 	function addToChecked(data) {
 		if (config_bot.checking) {
 			allPosts.push(data);
-			db.db("needamod-subreddits").collection(config_db.col).insertOne(data, function(err, result) {
+			db.db("needamod-subreddits").collection(process.env.DBCOLLECTION).insertOne(data, function(err, result) {
 				checkErrorBlank(err);
 			});
 		}
