@@ -210,7 +210,7 @@ function main(db) {
 								}
 
 								// If the post has broken the rules,
-								// the bot can interact with posts
+								// the bot can interact with posts,
 								// and the post is not already approved
 								if (canReport && config_bot.interact && !posts[i].approved) {
 									if (config_bot.remove) {

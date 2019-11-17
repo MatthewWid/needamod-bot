@@ -9,7 +9,7 @@
 	"minimum_age": 90,
 	"checking": true,
 	"interact": true,
-	"remove": false,
+	"remove": true,
 	"reports": {
 		"should_report": true,
 		"reason_subs": " Insufficient subscribers.",
