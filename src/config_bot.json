@@ -1,14 +1,15 @@
 {
 	"credit": "---\n\n^I ^am ^a ^bot. [^Feedback/Questions](https://www.reddit.com/message/compose?to=MatthewMob&subject=%2Fr%2FNeedAMod%20Bot%20Feedback%2FQuestion&message=) ^| [^Get ^your ^flair](https://www.reddit.com/message/compose?to=needamod-bot&subject=Flair%20Request&message=%5BReplace%20this%20text%20with%20a%20list%20of%20skills%20you%20have.%20Anything%20from%20%22css%22%2C%20%22automod%22%2C%20%22bot%22%20or%20%22wiki%22.%20Or%20leave%20this%20text%20box%20as%20is%20or%20empty%20if%20you%20do%20not%20need%20any%20relevant%20skills%20next%20to%20your%20flair.%5D)",
 	"mistake_credit": "If you believe this is a mistake, contact the moderators [here](https://www.reddit.com/message/compose?to=%2Fr%2Fneedamod&subject=Incorrect%20Flair%20Given&message=). Do not reply to this message.\n\n",
-	"get_posts": 3,
-	"wait_time": 5,
+	"get_posts": 1,
+	"wait_time": 0,
 	"minimum_posts": 25,
 	"minimum_subs": 50,
 	"minimum_karma": 500,
 	"minimum_age": 90,
 	"checking": true,
 	"interact": true,
+	"remove": false,
 	"reports": {
 		"should_report": true,
 		"reason_subs": " Insufficient subscribers.",

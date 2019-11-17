@@ -194,36 +194,36 @@ function main(db) {
 								//msg += "**NSFW**: " + (subInfo.nsfw ? "Yes" : "No") + "\n\n";
 								msg += config_bot.credit;
 
-								if (config_bot.interact) {
-									return posts[i].reply(msg);
-								} else {
-									return;
-								}
+								return;
 							}).then(() => {
-								if (config_bot.reports.should_report) {
-									if (subInfo.subscribers < config_bot.minimum_subs) {
-										reportReason += config_bot.reports.reason_subs;
-										canReport = true;
-									}
-									if (!subInfo.minimumPosts) {
-										reportReason += config_bot.reports.reason_posts;
-										canReport = true;
-									}
-									if (!isMod) {
-										reportReason += config_bot.reports.reason_mod;
-										canReport = true;
-									}
+								if (subInfo.subscribers < config_bot.minimum_subs) {
+									reportReason += config_bot.reports.reason_subs;
+									canReport = true;
+								}
+								if (!subInfo.minimumPosts) {
+									reportReason += config_bot.reports.reason_posts;
+									canReport = true;
+								}
+								if (!isMod) {
+									reportReason += config_bot.reports.reason_mod;
+									canReport = true;
+								}
 
-									if (canReport && config_bot.interact) {
-										return posts[i].report(
-											{
-												reason: reportReason
-											}
-										);
+								if (canReport && config_bot.interact) {
+									if (config_bot.remove) {
+										msg = `**Your post has been removed** for the following reasons:\n\n\`${reportReason}\`\n\nIf you believe this removal to be in error, please [message the moderators](/message/compose/?to=/r/${SUBREDDIT}).\n\n${config_bot.credit}`;
+
+										return posts[i].remove();
+									}	else if (config_bot.reports.should_report) {
+										return posts[i].report({
+											reason: reportReason
+										});
 									}
 								}
 
-								return false;
+								return;
+							}).then(() => {
+								return posts[i].reply(msg);
 							}).then(() => {
 								if (config_bot.interact) {
 									log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Commenting | Subreddit");
@@ -249,6 +249,7 @@ function main(db) {
 								 	user: {}
 								});
 							}).catch((err) => {
+								console.error(err);
 								log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Error | Getting subreddit: " + subName);
 								addToChecked({
 								 	post_id: posts[i].id,
