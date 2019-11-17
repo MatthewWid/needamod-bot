@@ -5,6 +5,7 @@ require("dotenv").config({
 
 const snoowrap = require("snoowrap");
 const fs = require("fs");
+const rp = require("request-promise");
 const mongo = require("mongodb").MongoClient;
 
 const config_bot = JSON.parse(fs.readFileSync(__dirname + "/config_bot.json"));
@@ -218,9 +219,7 @@ function main(db) {
 
 										return posts[i].remove();
 									}	else if (config_bot.reports.should_report) {
-										return posts[i].report({
-											reason: reportReason
-										});
+										return posts[i].report({reason: reportReason});
 									}
 								}
 
@@ -312,32 +311,30 @@ function main(db) {
 								msg += config_bot.offermod_text;
 								msg += config_bot.credit;
 
-								if (config_bot.interact) {
-									return posts[i].reply(msg);
-								} else {
-									return;
-								}
+								return;
 							}).then(() => {
-								if (config_bot.reports.should_report) {
-									if (userInfo.totalKarma < config_bot.minimum_karma) {
-										reportReason += config_bot.reports.reason_karma;
-										canReport = true;
-									}
-									if (userInfo.age < config_bot.minimum_age) {
-										reportReason += config_bot.reports.reason_age;
-										canReport = true;
-									}
+								if (userInfo.totalKarma < config_bot.minimum_karma) {
+									reportReason += config_bot.reports.reason_karma;
+									canReport = true;
+								}
+								if (userInfo.age < config_bot.minimum_age) {
+									reportReason += config_bot.reports.reason_age;
+									canReport = true;
+								}
+								
+								if (canReport && config_bot.interact && !posts[i].approved) {
+									if (config_bot.remove) {
+										msg = `**Your post has been removed** for the following reasons:\n\n\`${reportReason}\`\n\nIf you believe this removal to be in error, please [message the moderators](/message/compose/?to=/r/${SUBREDDIT}).\n\n${config_bot.credit}`;
 
-									if (canReport && config_bot.interact) {
-										return posts[i].report(
-											{
-												reason: reportReason
-											}
-										);
+										return posts[i].remove();
+									} else if (config_bot.reports.should_report) {
+										return posts[i].report({reason: reportReason});
 									}
 								}
 
 								return;
+							}).then(() => {
+								return config_bot.interact && posts[i].reply(msg);
 							}).then(() => {
 								if (config_bot.interact) {
 									log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Commenting | User");
@@ -356,6 +353,7 @@ function main(db) {
 								 	}
 								});
 							}).catch((err) => {
+								console.error(err);
 								log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Error | Getting user: " + userName);
 								addToChecked({
 								 	post_id: posts[i].id,
