@@ -209,7 +209,10 @@ function main(db) {
 									canReport = true;
 								}
 
-								if (canReport && config_bot.interact) {
+								// If the post has broken the rules,
+								// the bot can interact with posts
+								// and the post is not already approved
+								if (canReport && config_bot.interact && !posts[i].approved) {
 									if (config_bot.remove) {
 										msg = `**Your post has been removed** for the following reasons:\n\n\`${reportReason}\`\n\nIf you believe this removal to be in error, please [message the moderators](/message/compose/?to=/r/${SUBREDDIT}).\n\n${config_bot.credit}`;
 
@@ -223,7 +226,7 @@ function main(db) {
 
 								return;
 							}).then(() => {
-								return posts[i].reply(msg);
+								return config_bot.interact && posts[i].reply(msg);
 							}).then(() => {
 								if (config_bot.interact) {
 									log(timeNow.toLocaleTimeString("en-US") + " | " + posts[i].id + " | Commenting | Subreddit");
