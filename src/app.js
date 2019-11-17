@@ -62,6 +62,8 @@ mongo.connect(process.env.DBURL, function(err, datab) {
 });
 
 function main(db) {
+	// Take an array of report reasons and turn them into a string.
+	const formatReport = (reports) => reports.reduce((acc, curr) => `${acc} ${curr}`, "").slice(1);
 	// Take an integer and return a string that is formatted with decimals. Eg, 3985721 turns into "3,985,721"
 	function formatNum(num) {
 		return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -152,7 +154,7 @@ function main(db) {
 					var msg = "";
 					var isMod = false;
 					var canReport = false;
-					var reportReason = "";
+					var reportReasons = [];
 
 					if (allText_sub) { // If the title has a subreddit name
 						// If the post has a "css mods needed" flair, prepend the comment with the CSS questions
@@ -198,15 +200,15 @@ function main(db) {
 								return;
 							}).then(() => {
 								if (subInfo.subscribers < config_bot.minimum_subs) {
-									reportReason += config_bot.reports.reason_subs;
+									reportReasons.push(config_bot.reports.reason_subs);
 									canReport = true;
 								}
 								if (!subInfo.minimumPosts) {
-									reportReason += config_bot.reports.reason_posts;
+									reportReasons.push(config_bot.reports.reason_posts);
 									canReport = true;
 								}
 								if (!isMod) {
-									reportReason += config_bot.reports.reason_mod;
+									reportReasons.push(config_bot.reports.reason_mod);
 									canReport = true;
 								}
 
@@ -215,11 +217,13 @@ function main(db) {
 								// and the post is not already approved
 								if (canReport && config_bot.interact && !posts[i].approved) {
 									if (config_bot.remove) {
-										msg = `**Your post has been removed** for the following reasons:\n\n\`${reportReason}\`\n\nIf you believe this removal to be in error, please [message the moderators](/message/compose/?to=/r/${SUBREDDIT}).\n\n${config_bot.credit}`;
+										const reportList = reportReasons.reduce((acc, curr) => `${acc}\n* ${curr}`, "").slice(1);
+
+										msg = `**Your post has been removed** for the following reasons:\n\n${reportList}\n\nPlease familiarise yourself with our posting rules in the sidebar.\n\nIf you believe this removal to be in error, please [message the moderators](/message/compose/?to=/r/${SUBREDDIT}).\n\n${config_bot.credit}`;
 
 										return posts[i].remove();
 									}	else if (config_bot.reports.should_report) {
-										return posts[i].report({reason: reportReason});
+										return posts[i].report({reason: formatReport(reportReasons)});
 									}
 								}
 
@@ -314,21 +318,25 @@ function main(db) {
 								return;
 							}).then(() => {
 								if (userInfo.totalKarma < config_bot.minimum_karma) {
-									reportReason += config_bot.reports.reason_karma;
+									reportReasons.push(config_bot.reports.reason_karma);
 									canReport = true;
 								}
 								if (userInfo.age < config_bot.minimum_age) {
-									reportReason += config_bot.reports.reason_age;
+									reportReasons.push(config_bot.reports.reason_age);
 									canReport = true;
 								}
 								
 								if (canReport && config_bot.interact && !posts[i].approved) {
 									if (config_bot.remove) {
-										msg = `**Your post has been removed** for the following reasons:\n\n\`${reportReason}\`\n\nIf you believe this removal to be in error, please [message the moderators](/message/compose/?to=/r/${SUBREDDIT}).\n\n${config_bot.credit}`;
+										const reportList = reportReasons.reduce((acc, curr) => `${acc}\n* ${curr}`, "").slice(1);
+
+										msg = `**Your post has been removed** for the following reasons:\n\n\`${reportList}\`\n\nPlease familiarise yourself with our posting rules in the sidebar.\n\nIf you believe this removal to be in error, please [message the moderators](/message/compose/?to=/r/${SUBREDDIT}).\n\n${config_bot.credit}`;
 
 										return posts[i].remove();
 									} else if (config_bot.reports.should_report) {
-										return posts[i].report({reason: reportReason});
+										return posts[i].report({
+											reason: formatReport(reportReason)
+										});
 									}
 								}
 
