@@ -1,6 +1,4 @@
 node_modules
 changelog.txt
-src/config_oauth.json
-src/config_db.json
 yarn.lock
 variables.env

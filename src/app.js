@@ -10,6 +10,7 @@ const mongo = require("mongodb").MongoClient;
 const config_bot = JSON.parse(fs.readFileSync(__dirname + "/config_bot.json"));
 config_bot.get_posts = Math.min(config_bot.get_posts, 25);
 config_bot.user_flairs.categories.exp.max = Infinity;
+const {SUBREDDIT} = process.env;
 
 const r = new snoowrap({
 	userAgent: process.env.USERAGENT,
@@ -36,7 +37,7 @@ function log(msg) {
 
 // Log a debug message if the bot is set to debug mode in the configuration
 function debug(msg) {
-	if (config_bot.debug) {
+	if (process.env.NODE_ENV === "development") {
 		console.log("\n", msg);
 	}
 }
@@ -113,7 +114,7 @@ function main(db) {
 
 	// Subreddit info commenting
 	mainPromises.push(
-		r.getSubreddit(config_bot.subreddit).getNew({limit: config_bot.get_posts}).then((posts) => {
+		r.getSubreddit(SUBREDDIT).getNew({limit: config_bot.get_posts}).then((posts) => {
 			// Quickly filter and remove posts that cannot be checked, then return a list of posts ready to check
 			var validPosts = [];
 			var timeNow = Math.floor(Date.now() / 1000);
@@ -382,7 +383,7 @@ function main(db) {
 			// Wait for all subreddits to be processed, then end program
 			return Promise.all(promises);
 		}).catch((err) => {
-			debug("Overall | Error | Getting base subreddit: " + config_bot.subreddit);
+			debug("Overall | Error | Getting base subreddit: " + SUBREDDIT);
 		})
 	);
 	
@@ -447,7 +448,7 @@ function main(db) {
 
 					if (flair != undefined) { // If a flair can be given
 						return req.author.assignFlair({ // Give flair
-							subredditName: config_bot.subreddit,
+							subredditName: SUBREDDIT,
 							text: flairText,
 							cssClass: flair.css
 						}).then(() => { // Reply to messgae
@@ -457,7 +458,7 @@ function main(db) {
 						});
 					} else { // If text and CSS have not been supplied, remove their flair
 						return req.author.assignFlair({ // Give flair
-							subredditName: config_bot.subreddit
+							subredditName: SUBREDDIT
 						}).then(() => { // Reply to message
 							return req.msg.reply("**Your flair has been removed**.\n\n" + config_bot.mistake_credit + config_bot.credit + " ^| ^Ref.: ^" + req.msg.id);
 						}).then(() => { // Mark message as read
